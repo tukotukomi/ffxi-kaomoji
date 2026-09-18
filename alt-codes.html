@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alt Code Reference</title>
+<meta name="description" content="Searchable reference for every Windows Alt+numpad code — accented letters, currency, punctuation, and legacy DOS symbols.">
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --bg:#0A0E2E;
+    --surface:#131A42;
+    --surface-2:#1B234E;
+    --ink:#EDEFF7;
+    --ink-muted:#8B97C7;
+    --accent:#F2C94C;
+    --accent-ink:#1A1206;
+    --accent-soft:#232A5C;
+    --border:#3A5A95;
+    --border-strong:#5B82C2;
+    --link:#4FE04F;
+    --confirm:#66D9FF;
+    --warn:#FF7FC0;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Archivo',system-ui,-apple-system,Segoe UI,sans-serif;
+    padding-inline:20px;
+    padding-block:calc(77px + env(safe-area-inset-top,0px)) 60px;
+    max-width:1080px;
+    margin:0 auto;
+  }
+
+  .topnav{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    z-index:50;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    padding-top:env(safe-area-inset-top,0px);
+  }
+  .topnav-inner{
+    max-width:1080px;
+    margin:0 auto;
+    padding-inline:20px;
+    min-height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    position:relative;
+  }
+  .topnav-brand{
+    font-family:'Silkscreen',monospace;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.01em;
+    color:var(--accent);
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  .topnav-links{
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .topnav-link{
+    font-family:'Silkscreen',monospace;
+    font-weight:400;
+    font-size:12px;
+    color:var(--ink-muted);
+    text-decoration:none;
+    padding:8px 12px;
+    border-radius:8px;
+    white-space:nowrap;
+  }
+  .topnav-link:hover{background:var(--surface-2);}
+  .topnav-link.active{
+    background:var(--accent);
+    color:var(--accent-ink);
+  }
+  .topnav-toggle{
+    display:none;
+    align-items:center;
+    justify-content:center;
+    width:34px;
+    height:34px;
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--ink);
+    cursor:pointer;
+    flex:none;
+    padding:0;
+  }
+  @media (max-width:640px){
+    .topnav-toggle{display:flex;}
+    .topnav-links{
+      display:none;
+      position:absolute;
+      top:100%;
+      left:0;
+      right:0;
+      flex-direction:column;
+      align-items:stretch;
+      gap:2px;
+      background:var(--surface);
+      border-bottom:1px solid var(--border);
+      padding:8px 20px 14px;
+      box-shadow:0 8px 16px -8px rgba(0,0,0,0.25);
+    }
+    .topnav.open .topnav-links{display:flex;}
+    .topnav-link{padding:10px 12px;}
+  }
+
+  h1{
+    font-family:'Silkscreen',monospace;
+    font-weight:700;
+    font-size:clamp(28px,4.5vw,40px);
+    letter-spacing:0.01em;
+    margin:0 0 10px;
+    text-wrap:balance;
+  }
+  .subtitle{
+    color:var(--ink-muted);
+    font-size:14.5px;
+    line-height:1.5;
+    max-width:62ch;
+    margin:0 0 16px;
+  }
+
+  .tip{
+    position:relative;
+    background:var(--accent-soft);
+    border:1px solid var(--border);
+    border-radius:2px;
+    padding:12px 14px;
+    font-size:13px;
+    line-height:1.55;
+    color:var(--ink);
+    margin-bottom:22px;
+  }
+  .tip::before,
+  .tip::after{
+    content:"";
+    position:absolute;
+    top:-5px;
+    width:8px;
+    height:8px;
+    background:var(--accent);
+    transform:rotate(45deg);
+  }
+  .tip::before{left:-5px;}
+  .tip::after{right:-5px;}
+  .tip b{font-weight:700;}
+  .tip code{
+    font-family:'IBM Plex Mono',monospace;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:1px 5px;
+    font-size:12px;
+  }
+  .tip a{color:var(--link);}
+
+  .controls{
+    position:sticky;
+    top:calc(49px + env(safe-area-inset-top,0px));
+    z-index:5;
+    background:var(--bg);
+    padding-block:10px 12px;
+    margin-bottom:6px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    border-bottom:1px solid var(--border);
+  }
+
+  .tabs{
+    display:inline-flex;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:3px;
+    gap:3px;
+    width:fit-content;
+  }
+  .tab-btn{
+    font-family:'Archivo',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    color:var(--ink-muted);
+    background:transparent;
+    border:none;
+    border-radius:7px;
+    padding:7px 13px;
+    cursor:pointer;
+  }
+  .tab-btn.active{
+    background:var(--accent);
+    color:var(--accent-ink);
+  }
+
+  .search-row{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  .search-box{
+    flex:1;
+    min-width:180px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--surface);
+    border:1px solid var(--border-strong);
+    border-radius:9px;
+    padding:8px 12px;
+  }
+  .search-box svg{flex:none;opacity:0.55;}
+  .search-box input{
+    border:none;
+    outline:none;
+    background:transparent;
+    color:var(--ink);
+    font-family:'Archivo',sans-serif;
+    font-size:14px;
+    width:100%;
+  }
+  .search-box input::placeholder{color:var(--ink-muted);}
+  .count{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--ink-muted);
+    white-space:nowrap;
+  }
+
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .chip{
+    font-family:'Silkscreen',monospace;
+    font-size:11px;
+    font-weight:400;
+    color:var(--ink-muted);
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:6px 12px;
+    cursor:pointer;
+  }
+  .chip.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:var(--accent-ink);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(96px,1fr));
+    gap:10px;
+    margin-top:16px;
+  }
+
+  .tile{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:13px 8px 9px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+    cursor:pointer;
+    text-align:center;
+  }
+  .tile:hover{border-color:var(--accent);}
+  .tile:active{background:var(--accent-soft);}
+
+  .tile .glyph{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:26px;
+    line-height:1;
+    min-height:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink);
+  }
+  .tile .glyph.placeholder{
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:0.03em;
+    color:var(--ink-muted);
+    border:1px dashed var(--border-strong);
+    border-radius:5px;
+    padding:3px 5px;
+    min-width:34px;
+  }
+  .tile .code{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:5px;
+    padding:2px 6px;
+    color:var(--ink-muted);
+  }
+  .tile .name{
+    font-size:10.5px;
+    color:var(--ink-muted);
+    line-height:1.25;
+  }
+
+  .empty{
+    color:var(--ink-muted);
+    font-size:13.5px;
+    padding:30px 4px;
+    text-align:center;
+  }
+
+  .footnote{
+    margin-top:34px;
+    padding-top:18px;
+    border-top:1px solid var(--border);
+    color:var(--ink-muted);
+    font-size:12.5px;
+    line-height:1.6;
+  }
+  .footnote strong{color:var(--ink);}
+  .footnote a{color:var(--link);}
+
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:calc(24px + env(safe-area-inset-bottom,0px));
+    transform:translate(-50%,12px);
+    background:var(--ink);
+    color:var(--bg);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    padding:9px 16px;
+    border-radius:8px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .18s ease, transform .18s ease;
+    z-index:20;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .toast{transition:none;}
+  }
+
+  @media (max-width:480px){
+    .grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr));}
+    .tile .glyph{font-size:22px;}
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&family=Silkscreen:wght@400;700&display=swap">
+</head>
+<body>
+
+<nav class="topnav" id="topnav">
+  <div class="topnav-inner">
+    <a class="topnav-brand" href="index.html">FFXI Chat Codes</a>
+    <button class="topnav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="topnav-links" id="navLinks">
+      <a class="topnav-link" href="index.html">Kaomoji Reference</a>
+      <a class="topnav-link" href="face-builder.html">Face Builder</a>
+      <a class="topnav-link active" href="alt-codes.html">Alt Code Reference</a>
+    </div>
+  </div>
+</nav>
+
+<h1>Alt Code Reference</h1>
+<p class="subtitle">Every standard Windows Alt+numpad character code — hold <b>Alt</b>, type the digits on the numeric keypad (Num Lock on), release. Works in nearly any Windows text field, including game chat windows.</p>
+
+<div class="tip">
+  Looking to build FFXI chat emoticons like <code>(°_°)</code> or <code>┌(¬_¬)┘</code>? That curated, mood-filterable set moved to its own page: <b><a href="face-builder.html">Face Builder</a></b>. This page is the full lookup table underneath it.
+</div>
+
+<div class="tip">
+  <b>Which table do I want?</b> Use <b>Windows (ANSI)</b> codes — the <code>Alt+0</code>-prefixed ones — for accented letters, currency and punctuation; these are what reliably work in modern apps and games (e.g. typing <code>ñ</code> in Final Fantasy XI chat is <code>Alt+0241</code>). The <b>Legacy (OEM/DOS)</b> codes are the classic no-leading-zero combos from the old DOS character set — mostly symbols and box-drawing characters — and are less consistently supported outside older console apps.
+  <br><br>
+  <b>FFXI-specific note:</b> community testing (see footnote) confirms the entire <b>Windows (ANSI)</b> table — all of Alt+0128–Alt+0255 — renders correctly in FFXI's chat font. The <b>Legacy (OEM/DOS)</b> table is a different story: none of the classic picture symbols, card suits, arrows, box-drawing, or Greek-letter codes (Alt+1–31, Alt+127, and most of Alt+128–255) have been confirmed to render — FFXI's font appears to lack those glyphs entirely, so they'll typically <span style="color:var(--warn)">show as <code>?</code> or a small box in-game</span>. Only a handful of OEM codes that happen to duplicate an ANSI letter/symbol — plus a few player-confirmed exceptions documented on the Face Builder page — are safe. When in doubt, stick to the ANSI table.
+</div>
+
+<div class="controls">
+  <div class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="ansi">Windows (ANSI)</button>
+    <button class="tab-btn" data-tab="oem">Legacy (OEM / DOS)</button>
+  </div>
+  <div class="search-row">
+    <div class="search-box">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="search" type="text" placeholder="Search by character, code, or name…" autocomplete="off">
+    </div>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="chips" id="chips"></div>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" hidden>No matches. Try a different search term or category.</div>
+
+<div class="footnote">
+  <strong>Standard keys (Alt+0032–Alt+0126)</strong> aren't listed — those decimal codes just reproduce ordinary characters already on your keyboard (letters, digits, basic punctuation), so there's no need to use an Alt code for them.<br><br>
+  <strong>Laptop users:</strong> if there's no dedicated numeric keypad, hold <code>Fn</code> to activate the embedded number pad (usually over J/K/L/U/I/O/7/8/9/M) before holding Alt.<br><br>
+  <strong>Want ready-made FFXI emoticons instead of raw codes?</strong> See the companion <b><a href="face-builder.html">Face Builder</a></b> page — a curated, mood-filterable, FFXI-verified subset of this table plus a few player-confirmed Legacy/OEM exceptions. For fuller Japanese-style kaomoji (which use characters outside the 0–255 Alt-code range and require pasting), see <b><a href="index.html">Kaomoji Reference</a></b>.<br><br>
+  Click any tile to copy that character to your clipboard.
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ANSI_DATA = [
+[128,"€","Euro sign","Currency"],
+[130,"‚","Single low-9 quote","Punctuation"],
+[131,"ƒ","Florin sign","Currency"],
+[132,"„","Double low-9 quote","Punctuation"],
+[133,"…","Horizontal ellipsis","Punctuation"],
+[134,"†","Dagger","Symbol"],
+[135,"‡","Double dagger","Symbol"],
+[136,"ˆ","Circumflex accent","Symbol"],
+[137,"‰","Per mille sign","Math"],
+[138,"Š","Latin S caron","Letter"],
+[139,"‹","Single left angle quote","Punctuation"],
+[140,"Œ","Latin OE ligature","Letter"],
+[142,"Ž","Latin Z caron","Letter"],
+[145,"‘","Left single quote","Punctuation"],
+[146,"’","Right single quote","Punctuation"],
+[147,"“","Left double quote","Punctuation"],
+[148,"”","Right double quote","Punctuation"],
+[149,"•","Bullet","Symbol"],
+[150,"–","En dash","Punctuation"],
+[151,"—","Em dash","Punctuation"],
+[152,"˜","Small tilde","Symbol"],
+[153,"™","Trademark sign","Symbol"],
+[154,"š","Latin s caron","Letter"],
+[155,"›","Single right angle quote","Punctuation"],
+[156,"œ","Latin oe ligature","Letter"],
+[158,"ž","Latin z caron","Letter"],
+[159,"Ÿ","Latin Y diaeresis","Letter"],
+[160,"NBSP","Non-breaking space","Whitespace"],
+[161,"¡","Inverted exclamation mark","Punctuation"],
+[162,"¢","Cent sign","Currency"],
+[163,"£","Pound sign","Currency"],
+[164,"¤","Currency sign","Currency"],
+[165,"¥","Yen sign","Currency"],
+[166,"¦","Broken bar","Symbol"],
+[167,"§","Section sign","Symbol"],
+[168,"¨","Diaeresis","Symbol"],
+[169,"©","Copyright sign","Symbol"],
+[170,"ª","Feminine ordinal indicator","Ordinal"],
+[171,"«","Left angle quote","Punctuation"],
+[172,"¬","Not sign","Math"],
+[173,"SHY","Soft hyphen","Whitespace"],
+[174,"®","Registered sign","Symbol"],
+[175,"¯","Macron","Symbol"],
+[176,"°","Degree sign","Math"],
+[177,"±","Plus-minus sign","Math"],
+[178,"²","Superscript two","Math"],
+[179,"³","Superscript three","Math"],
+[180,"´","Acute accent","Symbol"],
+[181,"µ","Micro sign","Letter"],
+[182,"¶","Pilcrow sign","Symbol"],
+[183,"·","Middle dot","Punctuation"],
+[184,"¸","Cedilla","Symbol"],
+[185,"¹","Superscript one","Math"],
+[186,"º","Masculine ordinal indicator","Ordinal"],
+[187,"»","Right angle quote","Punctuation"],
+[188,"¼","One quarter","Fraction"],
+[189,"½","One half","Fraction"],
+[190,"¾","Three quarters","Fraction"],
+[191,"¿","Inverted question mark","Punctuation"],
+[192,"À","A grave","Letter"],
+[193,"Á","A acute","Letter"],
+[194,"Â","A circumflex","Letter"],
+[195,"Ã","A tilde","Letter"],
+[196,"Ä","A diaeresis","Letter"],
+[197,"Å","A ring above","Letter"],
+[198,"Æ","AE ligature","Letter"],
+[199,"Ç","C cedilla","Letter"],
+[200,"È","E grave","Letter"],
+[201,"É","E acute","Letter"],
+[202,"Ê","E circumflex","Letter"],
+[203,"Ë","E diaeresis","Letter"],
+[204,"Ì","I grave","Letter"],
+[205,"Í","I acute","Letter"],
+[206,"Î","I circumflex","Letter"],
+[207,"Ï","I diaeresis","Letter"],
+[208,"Ð","Eth","Letter"],
+[209,"Ñ","N tilde","Letter"],
+[210,"Ò","O grave","Letter"],
+[211,"Ó","O acute","Letter"],
+[212,"Ô","O circumflex","Letter"],
+[213,"Õ","O tilde","Letter"],
+[214,"Ö","O diaeresis","Letter"],
+[215,"×","Multiplication sign","Math"],
+[216,"Ø","O stroke","Letter"],
+[217,"Ù","U grave","Letter"],
+[218,"Ú","U acute","Letter"],
+[219,"Û","U circumflex","Letter"],
+[220,"Ü","U diaeresis","Letter"],
+[221,"Ý","Y acute","Letter"],
+[222,"Þ","Thorn","Letter"],
+[223,"ß","Sharp s","Letter"],
+[224,"à","a grave","Letter"],
+[225,"á","a acute","Letter"],
+[226,"â","a circumflex","Letter"],
+[227,"ã","a tilde","Letter"],
+[228,"ä","a diaeresis","Letter"],
+[229,"å","a ring above","Letter"],
+[230,"æ","ae ligature","Letter"],
+[231,"ç","c cedilla","Letter"],
+[232,"è","e grave","Letter"],
+[233,"é","e acute","Letter"],
+[234,"ê","e circumflex","Letter"],
+[235,"ë","e diaeresis","Letter"],
+[236,"ì","i grave","Letter"],
+[237,"í","i acute","Letter"],
+[238,"î","i circumflex","Letter"],
+[239,"ï","i diaeresis","Letter"],
+[240,"ð","eth","Letter"],
+[241,"ñ","n tilde","Letter"],
+[242,"ò","o grave","Letter"],
+[243,"ó","o acute","Letter"],
+[244,"ô","o circumflex","Letter"],
+[245,"õ","o tilde","Letter"],
+[246,"ö","o diaeresis","Letter"],
+[247,"÷","Division sign","Math"],
+[248,"ø","o stroke","Letter"],
+[249,"ù","u grave","Letter"],
+[250,"ú","u acute","Letter"],
+[251,"û","u circumflex","Letter"],
+[252,"ü","u diaeresis","Letter"],
+[253,"ý","y acute","Letter"],
+[254,"þ","thorn","Letter"],
+[255,"ÿ","y diaeresis","Letter"]
+];
+
+const OEM_DATA = [
+[1,"☺","White smiling face","Picture"],
+[2,"☻","Black smiling face","Picture"],
+[3,"♥","Heart suit","Picture"],
+[4,"♦","Diamond suit","Picture"],
+[5,"♣","Club suit","Picture"],
+[6,"♠","Spade suit","Picture"],
+[7,"•","Bullet","Picture"],
+[8,"◘","Inverse bullet","Picture"],
+[9,"○","White circle","Picture"],
+[10,"◙","Inverse white circle","Picture"],
+[11,"♂","Male sign","Picture"],
+[12,"♀","Female sign","Picture"],
+[13,"♪","Eighth note","Picture"],
+[14,"♫","Beamed eighth notes","Picture"],
+[15,"☼","Sun","Picture"],
+[16,"►","Black right-pointer","Arrow"],
+[17,"◄","Black left-pointer","Arrow"],
+[18,"↕","Up-down arrow","Arrow"],
+[19,"‼","Double exclamation mark","Punctuation"],
+[20,"¶","Pilcrow sign","Symbol"],
+[21,"§","Section sign","Symbol"],
+[22,"▬","Black rectangle","Picture"],
+[23,"↨","Up-down arrow with base","Arrow"],
+[24,"↑","Up arrow","Arrow"],
+[25,"↓","Down arrow","Arrow"],
+[26,"→","Right arrow","Arrow"],
+[27,"←","Left arrow","Arrow"],
+[28,"∟","Right angle","Math"],
+[29,"↔","Left-right arrow","Arrow"],
+[30,"▲","Up-pointing triangle","Picture"],
+[31,"▼","Down-pointing triangle","Picture"],
+[127,"⌂","House","Picture"],
+[128,"Ç","C cedilla","Letter"],
+[129,"ü","u diaeresis","Letter"],
+[130,"é","e acute","Letter"],
+[131,"â","a circumflex","Letter"],
+[132,"ä","a diaeresis","Letter"],
+[133,"à","a grave","Letter"],
+[134,"å","a ring above","Letter"],
+[135,"ç","c cedilla","Letter"],
+[136,"ê","e circumflex","Letter"],
+[137,"ë","e diaeresis","Letter"],
+[138,"è","e grave","Letter"],
+[139,"ï","i diaeresis","Letter"],
+[140,"î","i circumflex","Letter"],
+[141,"ì","i grave","Letter"],
+[142,"Ä","A diaeresis","Letter"],
+[143,"Å","A ring above","Letter"],
+[144,"É","E acute","Letter"],
+[145,"æ","ae ligature","Letter"],
+[146,"Æ","AE ligature","Letter"],
+[147,"ô","o circumflex","Letter"],
+[148,"ö","o diaeresis","Letter"],
+[149,"ò","o grave","Letter"],
+[150,"û","u circumflex","Letter"],
+[151,"ù","u grave","Letter"],
+[152,"ÿ","y diaeresis","Letter"],
+[153,"Ö","O diaeresis","Letter"],
+[154,"Ü","U diaeresis","Letter"],
+[155,"¢","Cent sign","Currency"],
+[156,"£","Pound sign","Currency"],
+[157,"¥","Yen sign","Currency"],
+[158,"₧","Peseta sign","Currency"],
+[159,"ƒ","Florin sign","Currency"],
+[160,"á","a acute","Letter"],
+[161,"í","i acute","Letter"],
+[162,"ó","o acute","Letter"],
+[163,"ú","u acute","Letter"],
+[164,"ñ","n tilde","Letter"],
+[165,"Ñ","N tilde","Letter"],
+[166,"ª","Feminine ordinal indicator","Ordinal"],
+[167,"º","Masculine ordinal indicator","Ordinal"],
+[168,"¿","Inverted question mark","Punctuation"],
+[169,"⌐","Reversed not sign","Math"],
+[170,"¬","Not sign","Math"],
+[171,"½","One half","Fraction"],
+[172,"¼","One quarter","Fraction"],
+[173,"¡","Inverted exclamation mark","Punctuation"],
+[174,"«","Left angle quote","Punctuation"],
+[175,"»","Right angle quote","Punctuation"],
+[176,"░","Light shade","Shading"],
+[177,"▒","Medium shade","Shading"],
+[178,"▓","Dark shade","Shading"],
+[179,"│","Box vertical","Box"],
+[180,"┤","Box vertical + left","Box"],
+[181,"╡","Box vert. single + left dbl.","Box"],
+[182,"╢","Box vert. dbl. + left single","Box"],
+[183,"╖","Box down dbl. + left single","Box"],
+[184,"╕","Box down single + left dbl.","Box"],
+[185,"╣","Box double vertical + left","Box"],
+[186,"║","Box double vertical","Box"],
+[187,"╗","Box double down + left","Box"],
+[188,"╝","Box double up + left","Box"],
+[189,"╜","Box up single + left dbl.","Box"],
+[190,"╛","Box up dbl. + left single","Box"],
+[191,"┐","Box down + left","Box"],
+[192,"└","Box up + right","Box"],
+[193,"┴","Box up + horizontal","Box"],
+[194,"┬","Box down + horizontal","Box"],
+[195,"├","Box vertical + right","Box"],
+[196,"─","Box horizontal","Box"],
+[197,"┼","Box vertical + horizontal","Box"],
+[198,"╞","Box vert. single + right dbl.","Box"],
+[199,"╟","Box vert. dbl. + right single","Box"],
+[200,"╚","Box double up + right","Box"],
+[201,"╔","Box double down + right","Box"],
+[202,"╩","Box double up + horizontal","Box"],
+[203,"╦","Box double down + horizontal","Box"],
+[204,"╠","Box double vertical + right","Box"],
+[205,"═","Box double horizontal","Box"],
+[206,"╬","Box double vertical + horiz.","Box"],
+[207,"╧","Box horiz. single + up dbl.","Box"],
+[208,"╨","Box horiz. dbl. + up single","Box"],
+[209,"╤","Box horiz. single + down dbl.","Box"],
+[210,"╥","Box horiz. dbl. + down single","Box"],
+[211,"╙","Box up single + right dbl.","Box"],
+[212,"╘","Box up dbl. + right single","Box"],
+[213,"╒","Box down single + right dbl.","Box"],
+[214,"╓","Box down dbl. + right single","Box"],
+[215,"╫","Box vert. single + horiz. dbl.","Box"],
+[216,"╪","Box vert. dbl. + horiz. single","Box"],
+[217,"┘","Box up + left","Box"],
+[218,"┌","Box down + right","Box"],
+[219,"█","Full block","Block"],
+[220,"▄","Lower half block","Block"],
+[221,"▌","Left half block","Block"],
+[222,"▐","Right half block","Block"],
+[223,"▀","Upper half block","Block"],
+[224,"α","Alpha","Greek"],
+[225,"ß","Sharp s / beta","Greek"],
+[226,"Γ","Gamma","Greek"],
+[227,"π","Pi","Greek"],
+[228,"Σ","Sigma","Greek"],
+[229,"σ","sigma","Greek"],
+[230,"µ","mu","Greek"],
+[231,"τ","tau","Greek"],
+[232,"Φ","Phi","Greek"],
+[233,"Θ","Theta","Greek"],
+[234,"Ω","Omega","Greek"],
+[235,"δ","delta","Greek"],
+[236,"∞","Infinity","Math"],
+[237,"φ","phi","Greek"],
+[238,"ε","epsilon","Greek"],
+[239,"∩","Intersection","Math"],
+[240,"≡","Identical to","Math"],
+[241,"±","Plus-minus sign","Math"],
+[242,"≥","Greater-than-or-equal","Math"],
+[243,"≤","Less-than-or-equal","Math"],
+[244,"⌠","Top half integral","Math"],
+[245,"⌡","Bottom half integral","Math"],
+[246,"÷","Division sign","Math"],
+[247,"≈","Almost equal to","Math"],
+[248,"°","Degree sign","Math"],
+[249,"∙","Bullet operator","Math"],
+[250,"·","Middle dot","Punctuation"],
+[251,"√","Square root","Math"],
+[252,"ⁿ","Superscript n","Math"],
+[253,"²","Superscript two","Math"],
+[254,"■","Black square","Symbol"],
+[255,"NBSP","Non-breaking space","Whitespace"]
+];
+
+const state = { tab:"ansi", query:"", category:"All" };
+const PLACEHOLDER_GLYPHS = new Set(["NBSP","SHY"]);
+
+function currentData(){ return state.tab === "ansi" ? ANSI_DATA : OEM_DATA; }
+function prefix(){ return state.tab === "ansi" ? "Alt+0" : "Alt+"; }
+
+function categoriesFor(data){
+  const set = new Set(data.map(d => d[3]));
+  return ["All", ...Array.from(set).sort()];
+}
+
+function renderChips(){
+  const chips = document.getElementById("chips");
+  chips.innerHTML = "";
+  categoriesFor(currentData()).forEach(cat => {
+    const b = document.createElement("button");
+    b.className = "chip" + (cat === state.category ? " active" : "");
+    b.textContent = cat;
+    b.addEventListener("click", () => {
+      state.category = cat;
+      renderChips();
+      renderGrid();
+    });
+    chips.appendChild(b);
+  });
+}
+
+function renderGrid(){
+  const grid = document.getElementById("grid");
+  const empty = document.getElementById("empty");
+  const count = document.getElementById("count");
+  const q = state.query.trim().toLowerCase();
+  const data = currentData().filter(([code, glyph, name, cat]) => {
+    if (state.category !== "All" && cat !== state.category) return false;
+    if (!q) return true;
+    const codeStr = (prefix() + String(code).padStart(state.tab === "ansi" ? 4 : (code < 100 ? 3 : 3), "0")).toLowerCase();
+    return name.toLowerCase().includes(q) || glyph.toLowerCase().includes(q) || String(code).includes(q) || codeStr.includes(q);
+  });
+
+  grid.innerHTML = "";
+  count.textContent = data.length + (data.length === 1 ? " code" : " codes");
+  empty.hidden = data.length !== 0;
+
+  const frag = document.createDocumentFragment();
+  data.forEach(([code, glyph, name, cat]) => {
+    const codeLabel = state.tab === "ansi"
+      ? "Alt+0" + String(code).padStart(3, "0")
+      : "Alt+" + code;
+
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    tile.title = "Click to copy " + name;
+
+    const g = document.createElement("div");
+    const isPlaceholder = PLACEHOLDER_GLYPHS.has(glyph);
+    g.className = "glyph" + (isPlaceholder ? " placeholder" : "");
+    g.textContent = glyph;
+
+    const c = document.createElement("div");
+    c.className = "code";
+    c.textContent = codeLabel;
+
+    const n = document.createElement("div");
+    n.className = "name";
+    n.textContent = name;
+
+    tile.appendChild(g);
+    tile.appendChild(c);
+    tile.appendChild(n);
+
+    tile.addEventListener("click", () => copyGlyph(glyph, name, codeLabel, isPlaceholder));
+    frag.appendChild(tile);
+  });
+  grid.appendChild(frag);
+}
+
+let toastTimer = null;
+function copyGlyph(glyph, name, codeLabel, isPlaceholder){
+  const value = isPlaceholder ? (glyph === "NBSP" ? " " : "­") : glyph;
+  try {
+    navigator.clipboard.writeText(value).catch(() => {});
+  } catch (e) {}
+  const toast = document.getElementById("toast");
+  toast.textContent = codeLabel ? ("Copied " + name + " · " + codeLabel) : ("Copied " + name);
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 1500);
+}
+
+document.getElementById("tabs").addEventListener("click", (e) => {
+  const btn = e.target.closest(".tab-btn");
+  if (!btn) return;
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  state.tab = btn.dataset.tab;
+  state.category = "All";
+  renderChips();
+  renderGrid();
+});
+
+document.getElementById("search").addEventListener("input", (e) => {
+  state.query = e.target.value;
+  renderGrid();
+});
+
+renderChips();
+renderGrid();
+
+const navToggle = document.getElementById("navToggle");
+const topnav = document.getElementById("topnav");
+if (navToggle && topnav) {
+  navToggle.addEventListener("click", () => {
+    const isOpen = topnav.classList.toggle("open");
+    navToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  });
+  document.getElementById("navLinks").addEventListener("click", (e) => {
+    if (e.target.closest("a")) {
+      topnav.classList.remove("open");
+      navToggle.setAttribute("aria-expanded", "false");
+    }
+  });
+}
+</script>
+</body>
+</html>

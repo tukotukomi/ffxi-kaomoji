@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Face Builder</title>
+<meta name="description" content="FFXI-confirmed Alt-code emoticons, organized by mood — click to copy, type straight from the keyboard.">
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --bg:#0A0E2E;
+    --surface:#131A42;
+    --surface-2:#1B234E;
+    --ink:#EDEFF7;
+    --ink-muted:#8B97C7;
+    --accent:#F2C94C;
+    --accent-ink:#1A1206;
+    --accent-soft:#232A5C;
+    --border:#3A5A95;
+    --border-strong:#5B82C2;
+    --link:#4FE04F;
+    --confirm:#66D9FF;
+    --warn:#FF7FC0;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Archivo',system-ui,-apple-system,Segoe UI,sans-serif;
+    padding-inline:20px;
+    padding-block:calc(77px + env(safe-area-inset-top,0px)) 60px;
+    max-width:1080px;
+    margin:0 auto;
+  }
+
+  .topnav{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    z-index:50;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    padding-top:env(safe-area-inset-top,0px);
+  }
+  .topnav-inner{
+    max-width:1080px;
+    margin:0 auto;
+    padding-inline:20px;
+    min-height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    position:relative;
+  }
+  .topnav-brand{
+    font-family:'Silkscreen',monospace;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.01em;
+    color:var(--accent);
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  .topnav-links{
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .topnav-link{
+    font-family:'Silkscreen',monospace;
+    font-weight:400;
+    font-size:12px;
+    color:var(--ink-muted);
+    text-decoration:none;
+    padding:8px 12px;
+    border-radius:8px;
+    white-space:nowrap;
+  }
+  .topnav-link:hover{background:var(--surface-2);}
+  .topnav-link.active{
+    background:var(--accent);
+    color:var(--accent-ink);
+  }
+  .topnav-toggle{
+    display:none;
+    align-items:center;
+    justify-content:center;
+    width:34px;
+    height:34px;
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--ink);
+    cursor:pointer;
+    flex:none;
+    padding:0;
+  }
+  @media (max-width:640px){
+    .topnav-toggle{display:flex;}
+    .topnav-links{
+      display:none;
+      position:absolute;
+      top:100%;
+      left:0;
+      right:0;
+      flex-direction:column;
+      align-items:stretch;
+      gap:2px;
+      background:var(--surface);
+      border-bottom:1px solid var(--border);
+      padding:8px 20px 14px;
+      box-shadow:0 8px 16px -8px rgba(0,0,0,0.25);
+    }
+    .topnav.open .topnav-links{display:flex;}
+    .topnav-link{padding:10px 12px;}
+  }
+
+  h1{
+    font-family:'Silkscreen',monospace;
+    font-weight:700;
+    font-size:clamp(28px,4.5vw,40px);
+    letter-spacing:0.01em;
+    margin:0 0 10px;
+    text-wrap:balance;
+  }
+  .subtitle{
+    color:var(--ink-muted);
+    font-size:14.5px;
+    line-height:1.5;
+    max-width:64ch;
+    margin:0 0 16px;
+  }
+  h3{
+    font-family:'Silkscreen',monospace;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:var(--confirm);
+    margin:26px 0 10px;
+  }
+
+  .tip{
+    position:relative;
+    background:var(--accent-soft);
+    border:1px solid var(--border);
+    border-radius:2px;
+    padding:14px 16px;
+    font-size:13px;
+    line-height:1.65;
+    color:var(--ink);
+    margin-bottom:22px;
+  }
+  .tip::before,
+  .tip::after{
+    content:"";
+    position:absolute;
+    top:-5px;
+    width:8px;
+    height:8px;
+    background:var(--accent);
+    transform:rotate(45deg);
+  }
+  .tip::before{left:-5px;}
+  .tip::after{right:-5px;}
+  .tip b{font-weight:700;}
+  .tip code{
+    font-family:'IBM Plex Mono',monospace;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:1px 5px;
+    font-size:12px;
+  }
+  .tip a{color:var(--link);}
+
+  .controls{
+    position:sticky;
+    top:calc(49px + env(safe-area-inset-top,0px));
+    z-index:5;
+    background:var(--bg);
+    padding-block:10px 12px;
+    margin-bottom:4px;
+    border-bottom:1px solid var(--border);
+  }
+
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .chip{
+    font-family:'Silkscreen',monospace;
+    font-size:11px;
+    font-weight:400;
+    color:var(--ink-muted);
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:6px 12px;
+    cursor:pointer;
+  }
+  .chip.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:var(--accent-ink);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(96px,1fr));
+    gap:10px;
+    margin-top:14px;
+  }
+  .grid.combos{
+    grid-template-columns:repeat(auto-fill,minmax(126px,1fr));
+  }
+
+  .tile{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:13px 8px 9px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+    cursor:pointer;
+    text-align:center;
+  }
+  .tile:hover{border-color:var(--accent);}
+  .tile:active{background:var(--accent-soft);}
+
+  .tile .glyph{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:26px;
+    line-height:1;
+    min-height:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink);
+  }
+  .tile .combo{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:16px;
+    line-height:1.3;
+    min-height:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink);
+    word-break:break-all;
+  }
+  .tile .code{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:5px;
+    padding:2px 6px;
+    color:var(--ink-muted);
+  }
+  .tile .name{
+    font-size:10.5px;
+    color:var(--ink-muted);
+    line-height:1.25;
+  }
+  .badge-confirm{
+    color:var(--confirm);
+    font-weight:700;
+    font-size:9.5px;
+    letter-spacing:0.02em;
+  }
+
+  .footnote{
+    margin-top:36px;
+    padding-top:18px;
+    border-top:1px solid var(--border);
+    color:var(--ink-muted);
+    font-size:12.5px;
+    line-height:1.6;
+  }
+  .footnote strong{color:var(--ink);}
+  .footnote a{color:var(--link);}
+
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:calc(24px + env(safe-area-inset-bottom,0px));
+    transform:translate(-50%,12px);
+    background:var(--ink);
+    color:var(--bg);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    padding:9px 16px;
+    border-radius:8px;
+    max-width:90vw;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .18s ease, transform .18s ease;
+    z-index:20;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .toast{transition:none;}
+  }
+
+  @media (max-width:480px){
+    .grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr));}
+    .tile .glyph{font-size:22px;}
+    .tile .combo{font-size:14px;}
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&family=Silkscreen:wght@400;700&display=swap">
+</head>
+<body>
+
+<nav class="topnav" id="topnav">
+  <div class="topnav-inner">
+    <a class="topnav-brand" href="index.html">FFXI Chat Codes</a>
+    <button class="topnav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="topnav-links" id="navLinks">
+      <a class="topnav-link" href="index.html">Kaomoji Reference</a>
+      <a class="topnav-link active" href="face-builder.html">Face Builder</a>
+      <a class="topnav-link" href="alt-codes.html">Alt Code Reference</a>
+    </div>
+  </div>
+</nav>
+
+<h1>Face Builder</h1>
+<p class="subtitle">Emoticons built entirely from Alt codes confirmed to render in FFXI's chat font — type these straight from the keyboard, no clipboard paste needed.</p>
+
+<div class="tip">
+  Hold <b>Alt</b>, type the digits on the numeric keypad (Num Lock on), release — that's it. Every glyph here is either from the Windows (ANSI) Alt+0128–0255 range, which community testing confirms renders correctly in FFXI, or a Legacy/OEM code an actual player has verified in-client (marked "player-confirmed" on its tile).
+  <br><br>
+  Laptop with no numpad? Hold <code>Fn</code> to activate the embedded one (usually over J/K/L/U/I/O/7/8/9/M) before holding Alt.
+  <br><br>
+  Want the full character lookup tables instead of just the face-building set? See the companion <a href="alt-codes.html">Alt Code Reference</a>. Want fuller Japanese-style kaomoji (paste-only, wider character range)? See <a href="index.html">Kaomoji Reference</a>.
+</div>
+
+<div class="controls">
+  <div class="chips" id="faceChips"></div>
+</div>
+
+<h3>Ready-made combos</h3>
+<div class="grid combos" id="comboGrid"></div>
+
+<h3>Parts</h3>
+<div class="grid" id="faceGrid"></div>
+
+<div class="footnote">
+  <strong>How this was verified:</strong> community-maintained Alt-code guides for FFXI (an FFXIclopedia guide and a HorizonXI wiki guide, the latter stating every listed code was individually tested in-client) consistently confirm the full Windows (ANSI) Alt+0128–0255 range renders correctly, while none of the classic Legacy/OEM picture, arrow, card-suit, box-drawing or Greek-letter codes appear in either list — meaning most are unconfirmed and, per player reports, commonly show as <code>?</code> or a box instead. This page adds only directly player-tested Legacy/OEM exceptions on top of the safe ANSI set: the box-drawing table pieces (<code>Alt+193</code>, <code>Alt+196</code>, <code>Alt+219</code>) under <b>Table Flip</b>, the vertical bar (<code>Alt+179</code>) under <b>Frame</b>, and the four box-drawing corners (<code>Alt+192</code>, <code>Alt+217</code>, <code>Alt+218</code>, <code>Alt+191</code>) under <b>Dance</b>. Support in that block is inconsistent, not all-or-nothing — the double vertical bar <code>║</code> (<code>Alt+186</code>), from the same CP437 block, was tested and does <b>not</b> render.
+  <br><br>
+  If you test other Legacy/OEM codes, report back either way and this list gets more accurate.
+  <br><br>
+  Click any tile to copy that character or combo to your clipboard.
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const FACE_PARTS = [
+["°","Alt+0176","Degree sign — eye","Happy"],
+["•","Alt+0149","Bullet — eye","Happy"],
+["¤","Alt+0164","Currency sign — sparkle eye","Happy"],
+["¨","Alt+0168","Diaeresis — wide eyes","Surprised"],
+["ˆ","Alt+0136","Circumflex accent — raised brow","Surprised"],
+["¡","Alt+0161","Inverted exclamation","Surprised"],
+["¿","Alt+0191","Inverted question mark","Confused"],
+["±","Alt+0177","Plus-minus sign","Confused"],
+["¬","Alt+0172","Not sign — flat brow","Annoyed"],
+["¦","Alt+0166","Broken bar — narrowed eye","Annoyed"],
+["¯","Alt+0175","Macron — flat, closed eye","Deadpan"],
+["…","Alt+0133","Ellipsis — speechless mouth","Deadpan"],
+["×","Alt+0215","Multiplication sign — x eyes","Dead"],
+["÷","Alt+0247","Division sign — dizzy eyes","Dead"],
+["†","Alt+0134","Dagger","Dead"],
+["‡","Alt+0135","Double dagger","Dead"],
+["„","Alt+0132","Low double quote — tear","Sad"],
+["´","Alt+0180","Acute accent — eyebrow","Extras"],
+["¸","Alt+0184","Cedilla — chin mark","Extras"],
+["§","Alt+0167","Section sign","Extras"],
+["¶","Alt+0182","Pilcrow sign","Extras"],
+["‹","Alt+0139","Single left angle quote — eye","Extras"],
+["›","Alt+0155","Single right angle quote — eye","Extras"],
+["«","Alt+0171","Left angle quote — closed eye","Extras"],
+["»","Alt+0187","Right angle quote — closed eye","Extras"],
+["Þ","Alt+0222","Capital thorn — googly eye","Extras"],
+["þ","Alt+0254","Lowercase thorn — little paw","Extras"],
+["┴","Alt+193","Table leg (player-confirmed)","Table Flip"],
+["─","Alt+196","Table edge (player-confirmed)","Table Flip"],
+["█","Alt+219","Table slab (player-confirmed)","Table Flip"],
+["│","Alt+179","Vertical bar frame (player-confirmed)","Frame"],
+["└","Alt+192","Corner, up+right (player-confirmed)","Dance"],
+["┘","Alt+217","Corner, up+left (player-confirmed)","Dance"],
+["┌","Alt+218","Corner, down+right (player-confirmed)","Dance"],
+["┐","Alt+191","Corner, down+left (player-confirmed)","Dance"]
+];
+
+const FACE_COMBOS = [
+["(°_°)","Happy"],
+["(•_•)","Happy"],
+["(¤_¤)","Happy"],
+["þ(°_°)þ","Happy"],
+["(¨_¨)","Surprised"],
+["(ˆ_ˆ)","Surprised"],
+["(¡_¡)","Surprised"],
+["(ÞoÞ)","Surprised"],
+["(¿_¿)","Confused"],
+["(±_±)","Confused"],
+["(¬_¬)","Annoyed"],
+["(¦_¦)","Annoyed"],
+["(¬Þ¬)","Annoyed"],
+["(¯_¯)","Deadpan"],
+["(-…-)","Deadpan"],
+["(×_×)","Dead"],
+["(÷_÷)","Dead"],
+["(†_†)","Dead"],
+["(‡_‡)","Dead"],
+["(;_;)„","Sad"],
+["(«_«)","Extras"],
+["(»_»)","Extras"],
+["(´_´)","Extras"],
+["(Þ_Þ)","Extras"],
+["(¬_¬) ┴─┴","Table Flip"],
+["┴─┴ (°_°)","Table Flip"],
+["(×_×) ┴─┴","Table Flip"],
+["│¬_¬│","Frame"],
+["│×_×│","Frame"],
+["│°_°│","Frame"],
+["┌(°_°)┐","Dance"],
+["└(¬_¬)┘","Dance"],
+["┌(¯_¯)┘","Dance"],
+["└(°_°)┐","Dance"]
+];
+
+const faceState = { category:"All" };
+
+function faceCategories(){
+  const set = new Set(FACE_PARTS.map(f => f[3]));
+  return ["All", ...Array.from(set)];
+}
+
+function renderFaceChips(){
+  const chips = document.getElementById("faceChips");
+  chips.innerHTML = "";
+  faceCategories().forEach(cat => {
+    const b = document.createElement("button");
+    b.className = "chip" + (cat === faceState.category ? " active" : "");
+    b.textContent = cat;
+    b.addEventListener("click", () => {
+      faceState.category = cat;
+      renderFaceChips();
+      renderFaceParts();
+      renderCombos();
+    });
+    chips.appendChild(b);
+  });
+}
+
+function renderFaceParts(){
+  const grid = document.getElementById("faceGrid");
+  grid.innerHTML = "";
+  const data = FACE_PARTS.filter(([glyph, code, name, cat]) => faceState.category === "All" || cat === faceState.category);
+  const frag = document.createDocumentFragment();
+  data.forEach(([glyph, code, name, cat]) => {
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    tile.title = "Click to copy " + name;
+
+    const g = document.createElement("div");
+    g.className = "glyph";
+    g.textContent = glyph;
+
+    const c = document.createElement("div");
+    c.className = "code";
+    c.textContent = code;
+
+    const n = document.createElement("div");
+    n.className = "name";
+    if (name.includes("(player-confirmed)")) {
+      n.textContent = name.replace(" (player-confirmed)", "");
+      n.appendChild(document.createElement("br"));
+      const badge = document.createElement("span");
+      badge.className = "badge-confirm";
+      badge.textContent = "player-confirmed";
+      n.appendChild(badge);
+    } else {
+      n.textContent = name;
+    }
+
+    tile.appendChild(g);
+    tile.appendChild(c);
+    tile.appendChild(n);
+    tile.addEventListener("click", () => copyText(glyph, name, code));
+    frag.appendChild(tile);
+  });
+  grid.appendChild(frag);
+}
+
+function renderCombos(){
+  const grid = document.getElementById("comboGrid");
+  grid.innerHTML = "";
+  const data = FACE_COMBOS.filter(([face, cat]) => faceState.category === "All" || cat === faceState.category);
+  const frag = document.createDocumentFragment();
+  data.forEach(([face, cat]) => {
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    tile.title = "Click to copy";
+
+    const f = document.createElement("div");
+    f.className = "combo";
+    f.textContent = face;
+
+    const n = document.createElement("div");
+    n.className = "name";
+    n.textContent = cat;
+
+    tile.appendChild(f);
+    tile.appendChild(n);
+    tile.addEventListener("click", () => copyText(face, cat + " face", ""));
+    frag.appendChild(tile);
+  });
+  grid.appendChild(frag);
+}
+
+let toastTimer = null;
+function copyText(value, name, codeLabel){
+  try {
+    navigator.clipboard.writeText(value).catch(() => {});
+  } catch (e) {}
+  const toast = document.getElementById("toast");
+  toast.textContent = codeLabel ? ("Copied " + name + " · " + codeLabel) : ("Copied " + name);
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 1500);
+}
+
+renderFaceChips();
+renderFaceParts();
+renderCombos();
+
+const navToggle = document.getElementById("navToggle");
+const topnav = document.getElementById("topnav");
+if (navToggle && topnav) {
+  navToggle.addEventListener("click", () => {
+    const isOpen = topnav.classList.toggle("open");
+    navToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  });
+  document.getElementById("navLinks").addEventListener("click", (e) => {
+    if (e.target.closest("a")) {
+      topnav.classList.remove("open");
+      navToggle.setAttribute("aria-expanded", "false");
+    }
+  });
+}
+</script>
+</body>
+</html>

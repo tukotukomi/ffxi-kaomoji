@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaomoji Reference</title>
+<meta name="description" content="Click-to-copy kaomoji faces and their building-block symbols, for pasting Japanese-style emoticons into game chat.">
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --bg:#0A0E2E;
+    --surface:#131A42;
+    --surface-2:#1B234E;
+    --ink:#EDEFF7;
+    --ink-muted:#8B97C7;
+    --accent:#F2C94C;
+    --accent-ink:#1A1206;
+    --accent-soft:#232A5C;
+    --border:#3A5A95;
+    --border-strong:#5B82C2;
+    --link:#4FE04F;
+    --confirm:#66D9FF;
+    --warn:#FF7FC0;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Archivo',system-ui,-apple-system,Segoe UI,sans-serif;
+    padding-inline:20px;
+    padding-block:calc(77px + env(safe-area-inset-top,0px)) 60px;
+    max-width:1080px;
+    margin:0 auto;
+  }
+
+  .topnav{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    z-index:50;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    padding-top:env(safe-area-inset-top,0px);
+  }
+  .topnav-inner{
+    max-width:1080px;
+    margin:0 auto;
+    padding-inline:20px;
+    min-height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    position:relative;
+  }
+  .topnav-brand{
+    font-family:'Silkscreen',monospace;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.01em;
+    color:var(--accent);
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  .topnav-links{
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .topnav-link{
+    font-family:'Silkscreen',monospace;
+    font-weight:400;
+    font-size:12px;
+    color:var(--ink-muted);
+    text-decoration:none;
+    padding:8px 12px;
+    border-radius:8px;
+    white-space:nowrap;
+  }
+  .topnav-link:hover{background:var(--surface-2);}
+  .topnav-link.active{
+    background:var(--accent);
+    color:var(--accent-ink);
+  }
+  .topnav-toggle{
+    display:none;
+    align-items:center;
+    justify-content:center;
+    width:34px;
+    height:34px;
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--ink);
+    cursor:pointer;
+    flex:none;
+    padding:0;
+  }
+  @media (max-width:640px){
+    .topnav-toggle{display:flex;}
+    .topnav-links{
+      display:none;
+      position:absolute;
+      top:100%;
+      left:0;
+      right:0;
+      flex-direction:column;
+      align-items:stretch;
+      gap:2px;
+      background:var(--surface);
+      border-bottom:1px solid var(--border);
+      padding:8px 20px 14px;
+      box-shadow:0 8px 16px -8px rgba(0,0,0,0.25);
+    }
+    .topnav.open .topnav-links{display:flex;}
+    .topnav-link{padding:10px 12px;}
+  }
+
+  h1{
+    font-family:'Silkscreen',monospace;
+    font-weight:700;
+    font-size:clamp(28px,4.5vw,40px);
+    letter-spacing:0.01em;
+    margin:0 0 10px;
+    text-wrap:balance;
+  }
+  .subtitle{
+    color:var(--ink-muted);
+    font-size:14.5px;
+    line-height:1.5;
+    max-width:64ch;
+    margin:0 0 16px;
+  }
+
+  h2{
+    font-family:'Silkscreen',monospace;
+    font-weight:700;
+    font-size:19px;
+    letter-spacing:0.01em;
+    margin:38px 0 4px;
+  }
+  .section-note{
+    color:var(--ink-muted);
+    font-size:13px;
+    margin:0 0 14px;
+    max-width:64ch;
+    line-height:1.5;
+  }
+
+  .tip{
+    position:relative;
+    background:var(--accent-soft);
+    border:1px solid var(--border);
+    border-radius:2px;
+    padding:14px 16px;
+    font-size:13px;
+    line-height:1.65;
+    color:var(--ink);
+    margin-bottom:22px;
+  }
+  .tip::before,
+  .tip::after{
+    content:"";
+    position:absolute;
+    top:-5px;
+    width:8px;
+    height:8px;
+    background:var(--accent);
+    transform:rotate(45deg);
+  }
+  .tip::before{left:-5px;}
+  .tip::after{right:-5px;}
+  .tip b{font-weight:700;}
+  .tip ol{margin:8px 0 0; padding-left:20px;}
+  .tip li{margin-bottom:3px;}
+
+  .controls{
+    position:sticky;
+    top:calc(49px + env(safe-area-inset-top,0px));
+    z-index:5;
+    background:var(--bg);
+    padding-block:10px 12px;
+    margin-bottom:4px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    border-bottom:1px solid var(--border);
+  }
+
+  .search-row{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  .search-box{
+    flex:1;
+    min-width:180px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--surface);
+    border:1px solid var(--border-strong);
+    border-radius:9px;
+    padding:8px 12px;
+  }
+  .search-box svg{flex:none;opacity:0.55;}
+  .search-box input{
+    border:none;
+    outline:none;
+    background:transparent;
+    color:var(--ink);
+    font-family:'Archivo',sans-serif;
+    font-size:14px;
+    width:100%;
+  }
+  .search-box input::placeholder{color:var(--ink-muted);}
+  .count{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--ink-muted);
+    white-space:nowrap;
+  }
+
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .chip{
+    font-family:'Silkscreen',monospace;
+    font-size:11px;
+    font-weight:400;
+    color:var(--ink-muted);
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:6px 12px;
+    cursor:pointer;
+  }
+  .chip.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:var(--accent-ink);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:10px;
+    margin-top:14px;
+  }
+
+  .tile{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:16px 10px 10px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:7px;
+    cursor:pointer;
+    text-align:center;
+  }
+  .tile:hover{border-color:var(--accent);}
+  .tile:active{background:var(--accent-soft);}
+
+  .tile .face{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:19px;
+    line-height:1.3;
+    color:var(--ink);
+    word-break:break-all;
+  }
+  .tile .label{
+    font-size:10.5px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    text-transform:uppercase;
+    color:var(--ink-muted);
+  }
+
+  .blocks-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(84px,1fr));
+    gap:9px;
+    margin-top:14px;
+  }
+  .block-tile{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:11px 6px 8px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    cursor:pointer;
+    text-align:center;
+  }
+  .block-tile:hover{border-color:var(--accent);}
+  .block-tile:active{background:var(--accent-soft);}
+  .block-tile .glyph{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:21px;
+  }
+  .block-tile .name{
+    font-size:9.5px;
+    color:var(--ink-muted);
+    line-height:1.2;
+  }
+
+  .empty{
+    color:var(--ink-muted);
+    font-size:13.5px;
+    padding:30px 4px;
+    text-align:center;
+  }
+
+  .footnote{
+    margin-top:36px;
+    padding-top:18px;
+    border-top:1px solid var(--border);
+    color:var(--ink-muted);
+    font-size:12.5px;
+    line-height:1.6;
+  }
+  .footnote strong{color:var(--ink);}
+  .footnote a{color:var(--link);}
+
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:calc(24px + env(safe-area-inset-bottom,0px));
+    transform:translate(-50%,12px);
+    background:var(--ink);
+    color:var(--bg);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    padding:9px 16px;
+    border-radius:8px;
+    max-width:90vw;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .18s ease, transform .18s ease;
+    z-index:20;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .toast{transition:none;}
+  }
+
+  @media (max-width:480px){
+    .grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
+    .blocks-grid{grid-template-columns:repeat(auto-fill,minmax(72px,1fr));}
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&family=Silkscreen:wght@400;700&display=swap">
+</head>
+<body>
+
+<nav class="topnav" id="topnav">
+  <div class="topnav-inner">
+    <a class="topnav-brand" href="index.html">FFXI Chat Codes</a>
+    <button class="topnav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="topnav-links" id="navLinks">
+      <a class="topnav-link active" href="index.html">Kaomoji Reference</a>
+      <a class="topnav-link" href="face-builder.html">Face Builder</a>
+      <a class="topnav-link" href="alt-codes.html">Alt Code Reference</a>
+    </div>
+  </div>
+</nav>
+
+<h1>Kaomoji Reference</h1>
+
+<div class="tip">
+  <b>♪♪ Ready-made Japanese-style emoticons and individual symbols for your use ♪♪</b>
+  <br><br>
+  Click any tile to copy it, then paste into chat!<br>
+  If a specific face doesn't render correctly, your client's font may be missing that glyph. Try a similar one or build your own!
+  <br><br>
+  Paste not working? Check out <a href="face-builder.html">a quick guide</a>.
+</div>
+
+<div class="controls">
+  <div class="search-row">
+    <div class="search-box">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="search" type="text" placeholder="Search by mood or face…" autocomplete="off">
+    </div>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="chips" id="chips"></div>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" hidden>No matches. Try a different search term or category.</div>
+
+<h2>Building blocks</h2>
+<p class="section-note">Mix and match these to make your own — this is exactly what 八(＾□＾*) is made of: the kanji 八 as eyebrows, a fullwidth circumflex for each eye, and a white square for the mouth.</p>
+<div class="blocks-grid" id="blocks"></div>
+
+<div class="footnote">
+  <strong>Laptop / no numpad needed here</strong> — none of this uses Alt codes, since kaomoji live far outside the 0–255 range those can reach. It's pure copy-paste.<br><br>
+  Want FFXI-confirmed emoticons you can type straight from the keyboard instead of pasting? See <b><a href="face-builder.html">Face Builder</a></b>. Want the plain accented-letter and symbol Alt codes (á, ñ, ¿, etc.)? See <b><a href="alt-codes.html">Alt Code Reference</a></b>.
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const FACES = [
+["(＾▽＾)","Happy"],
+["(≧▽≦)","Happy"],
+["(´▽\`)","Happy"],
+["(o^▽^o)","Happy"],
+["八(＾□＾*)","Laughing"],
+["(≧∇≦)ノ","Laughing"],
+["ｗ(ﾟｏﾟ)ｗ","Laughing"],
+["＼(^o^)／","Cheering"],
+["＼(≧∀≦)／","Cheering"],
+["٩(^‿^)۶","Cheering"],
+["(♥ω♥)","Love"],
+["(｡♥‿♥｡)","Love"],
+["(￣ε￣＠)","Love"],
+["(ToT)","Crying"],
+["(´；ω；\`)","Crying"],
+["o(TヘTo)","Crying"],
+["(｡•́︿•̀｡)","Sad"],
+["(；一_一)","Sad"],
+["(╬ﾟдﾟ)","Angry"],
+["(ノ｀Д´)ノ","Angry"],
+["٩(ఠ益ఠ)۶","Angry"],
+["(⊙_⊙)","Surprised"],
+["Σ(ﾟдﾟ)","Surprised"],
+["(°o°)","Surprised"],
+["¯\\_(ツ)_/¯","Shrug"],
+["(・_・;)","Shrug"],
+["(￣～￣;)","Shrug"],
+["(╯°□°）╯︵ ┻━┻","Table flip"],
+["ಠ_ಠ","Disapproval"],
+["(-_-) zzZ","Sleepy"],
+["(｡-_-｡)","Sleepy"],
+["(^_-)","Wink"],
+[";)ﾉ","Wink"],
+["m(_ _)m","Apology"],
+["orz","Apology"],
+["(￣▽￣;)","Embarrassed"],
+["(・・;)","Embarrassed"],
+["(=^･ω･^=)","Cat"],
+["ヽ(=^･ω･^=)丿","Cat"],
+["٩(๑\`^´๑)۶","Determined"],
+["(๑•̀ㅂ•́)و","Determined"],
+["♪(´▽｀)","Music"],
+["└(＾o＾)┘","Dance"]
+];
+
+const BLOCKS = [
+["（","Fullwidth open paren"],
+["）","Fullwidth close paren"],
+["＾","Fullwidth circumflex"],
+["□","White square"],
+["▽","White down triangle"],
+["△","White up triangle"],
+["ω","Greek omega (mouth)"],
+["д","Cyrillic de (tongue)"],
+["Д","Cyrillic De (open mouth)"],
+["ﾟ","Halfwidth sound mark (sparkle)"],
+["´","Acute accent (eyebrow)"],
+["\`","Grave accent (eyebrow)"],
+["ε","Epsilon (kiss)"],
+["ノ","Katakana no (hand/arm)"],
+["ヽ","Katakana reverse (hand/arm)"],
+["一","Kanji one (closed eye)"],
+["八","Kanji eight (eyebrows)"],
+["Σ","Sigma (shock)"],
+["⊙","Circled dot (eye)"],
+["ಠ","Kannada tha (side-eye)"],
+["♪","Eighth note"],
+["♥","Heart"],
+["≧","Squint (greater-eq)"],
+["≦","Squint (less-eq)"]
+];
+
+const state = { query:"", category:"All" };
+
+function categoriesFor(){
+  const set = new Set(FACES.map(f => f[1]));
+  return ["All", ...Array.from(set)];
+}
+
+function renderChips(){
+  const chips = document.getElementById("chips");
+  chips.innerHTML = "";
+  categoriesFor().forEach(cat => {
+    const b = document.createElement("button");
+    b.className = "chip" + (cat === state.category ? " active" : "");
+    b.textContent = cat;
+    b.addEventListener("click", () => {
+      state.category = cat;
+      renderChips();
+      renderGrid();
+    });
+    chips.appendChild(b);
+  });
+}
+
+function renderGrid(){
+  const grid = document.getElementById("grid");
+  const empty = document.getElementById("empty");
+  const count = document.getElementById("count");
+  const q = state.query.trim().toLowerCase();
+
+  const data = FACES.filter(([face, cat]) => {
+    if (state.category !== "All" && cat !== state.category) return false;
+    if (!q) return true;
+    return face.toLowerCase().includes(q) || cat.toLowerCase().includes(q);
+  });
+
+  grid.innerHTML = "";
+  count.textContent = data.length + (data.length === 1 ? " face" : " faces");
+  empty.hidden = data.length !== 0;
+
+  const frag = document.createDocumentFragment();
+  data.forEach(([face, cat]) => {
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    tile.title = "Click to copy";
+
+    const f = document.createElement("div");
+    f.className = "face";
+    f.textContent = face;
+
+    const l = document.createElement("div");
+    l.className = "label";
+    l.textContent = cat;
+
+    tile.appendChild(f);
+    tile.appendChild(l);
+    tile.addEventListener("click", () => copyText(face, face));
+    frag.appendChild(tile);
+  });
+  grid.appendChild(frag);
+}
+
+function renderBlocks(){
+  const wrap = document.getElementById("blocks");
+  wrap.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  BLOCKS.forEach(([glyph, name]) => {
+    const tile = document.createElement("div");
+    tile.className = "block-tile";
+    tile.title = "Click to copy";
+
+    const g = document.createElement("div");
+    g.className = "glyph";
+    g.textContent = glyph;
+
+    const n = document.createElement("div");
+    n.className = "name";
+    n.textContent = name;
+
+    tile.appendChild(g);
+    tile.appendChild(n);
+    tile.addEventListener("click", () => copyText(glyph, glyph + " — " + name));
+    frag.appendChild(tile);
+  });
+  wrap.appendChild(frag);
+}
+
+let toastTimer = null;
+function copyText(value, label){
+  try {
+    navigator.clipboard.writeText(value).catch(() => {});
+  } catch (e) {}
+  const toast = document.getElementById("toast");
+  toast.textContent = "Copied: " + label;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 1500);
+}
+
+document.getElementById("search").addEventListener("input", (e) => {
+  state.query = e.target.value;
+  renderGrid();
+});
+
+renderChips();
+renderGrid();
+renderBlocks();
+
+const navToggle = document.getElementById("navToggle");
+const topnav = document.getElementById("topnav");
+if (navToggle && topnav) {
+  navToggle.addEventListener("click", () => {
+    const isOpen = topnav.classList.toggle("open");
+    navToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  });
+  document.getElementById("navLinks").addEventListener("click", (e) => {
+    if (e.target.closest("a")) {
+      topnav.classList.remove("open");
+      navToggle.setAttribute("aria-expanded", "false");
+    }
+  });
+}
+</script>
+</body>
+</html>
