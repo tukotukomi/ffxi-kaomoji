@@ -221,6 +221,7 @@
   }
 
   .tile{
+    position:relative;
     background:var(--surface);
     border:1px solid var(--border);
     border-radius:10px;
@@ -271,9 +272,11 @@
     line-height:1.25;
   }
   .badge-confirm{
+    position:absolute;
+    top:6px;
+    right:6px;
     display:inline-flex;
     color:var(--confirm);
-    margin-top:2px;
   }
   .badge-confirm svg{display:block;}
 
@@ -499,21 +502,21 @@ function renderFaceParts(){
 
     const n = document.createElement("div");
     n.className = "name";
-    if (name.includes("(player-confirmed)")) {
-      n.textContent = name.replace(" (player-confirmed)", "");
-      n.appendChild(document.createElement("br"));
-      const badge = document.createElement("span");
-      badge.className = "badge-confirm";
-      badge.title = "Player-confirmed";
-      badge.innerHTML = confirmBadgeSVG();
-      n.appendChild(badge);
-    } else {
-      n.textContent = name;
-    }
+    const isConfirmed = name.includes("(player-confirmed)");
+    n.textContent = isConfirmed ? name.replace(" (player-confirmed)", "") : name;
 
     tile.appendChild(g);
     tile.appendChild(c);
     tile.appendChild(n);
+
+    if (isConfirmed) {
+      const badge = document.createElement("span");
+      badge.className = "badge-confirm";
+      badge.title = "Player-confirmed";
+      badge.innerHTML = confirmBadgeSVG();
+      tile.appendChild(badge);
+    }
+
     tile.addEventListener("click", () => copyText(glyph, name, code));
     frag.appendChild(tile);
   });
