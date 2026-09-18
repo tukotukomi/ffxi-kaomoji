@@ -580,15 +580,42 @@ function renderBlocks(){
 }
 
 let toastTimer = null;
-function copyText(value, label){
+function fallbackCopy(text){
   try {
-    navigator.clipboard.writeText(value).catch(() => {});
-  } catch (e) {}
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    ta.setAttribute("readonly", "");
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+function showToast(text){
   const toast = document.getElementById("toast");
-  toast.textContent = "Copied: " + label;
+  toast.textContent = text;
   toast.classList.add("show");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove("show"), 1500);
+}
+
+function copyText(value, label){
+  if (window.isSecureContext && navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(value).then(() => {
+      showToast("Copied: " + label);
+    }).catch(() => {
+      showToast(fallbackCopy(value) ? "Copied: " + label : "Couldn't copy — select and copy manually");
+    });
+  } else {
+    showToast(fallbackCopy(value) ? "Copied: " + label : "Couldn't copy — select and copy manually");
+  }
 }
 
 document.getElementById("search").addEventListener("input", (e) => {
