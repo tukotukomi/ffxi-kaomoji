@@ -7,3 +7,7 @@ Three small reference pages for typing special characters and emoticons in Final
 - **[Alt Code Reference](alt-codes.html)** — the full Windows Alt+numpad character lookup table (ANSI + Legacy/OEM).
 
 Static HTML/CSS/JS, no build step. Open `index.html` directly or serve the folder with any static host.
+
+## Rendering research
+
+Which Legacy/OEM Alt codes actually render in FFXI's chat font isn't fully documented anywhere, so we're tracking it ourselves as we test in-game: **[Kaomoji_Alt_Emporium_Tracker.xlsx](Kaomoji_Alt_Emporium_Tracker.xlsx)** lists every character/combo used across these pages (419 entries) with a Verified / Untested / Unsupported status per row. It builds on community-maintained guides (an FFXIclopedia ASCII Alt Codes guide and a HorizonXI wiki guide) — this is meant to give something back: pull it, verify a few rows in your own client, and the ground truth here gets a little more complete.
