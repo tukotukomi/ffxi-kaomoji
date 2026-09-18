@@ -21,6 +21,7 @@
     --link:#4FE04F;
     --confirm:#66D9FF;
     --warn:#FF7FC0;
+    --danger:#FF5252;
   }
 
   *{box-sizing:border-box;}
@@ -288,6 +289,7 @@
   }
 
   .tile{
+    position:relative;
     background:var(--surface);
     border:1px solid var(--border);
     border-radius:10px;
@@ -324,6 +326,7 @@
     margin-top:14px;
   }
   .block-tile{
+    position:relative;
     background:var(--surface);
     border:1px solid var(--border);
     border-radius:9px;
@@ -346,6 +349,16 @@
     color:var(--ink-muted);
     line-height:1.2;
   }
+  .badge-status{
+    position:absolute;
+    top:6px;
+    right:6px;
+    display:inline-flex;
+  }
+  .badge-status svg{display:block;}
+  .badge-status.status-verified{color:var(--confirm);}
+  .badge-status.status-untested{color:var(--ink);}
+  .badge-status.status-unsupported{color:var(--danger);}
 
   .empty{
     color:var(--ink-muted);
@@ -529,6 +542,39 @@ const BLOCKS = [
 ["≦","Squint (less-eq)"]
 ];
 
+// Non-"Untested" exceptions pulled from Kaomoji_Alt_Emporium_Tracker.xlsx (Player Tested column),
+// keyed by the exact face/symbol content since these are paste-based (no Alt code applies).
+// Anything not listed here defaults to "Untested". Re-sync by hand when the tracker changes.
+const CONTENT_STATUS = {
+  "(＾▽＾)":"Verified",
+  "(≧▽≦)":"Verified",
+  "(´▽`)":"Verified",
+  "(o^▽^o)":"Verified",
+  "八(＾□＾*)":"Verified"
+};
+function getStatus(content){ return CONTENT_STATUS[content] || "Untested"; }
+function statusClass(status){
+  if (status === "Verified") return "status-verified";
+  if (status === "Unsupported") return "status-unsupported";
+  return "status-untested";
+}
+
+let statusIconSeq = 0;
+function statusBadgeSVG(status){
+  const id = "status-cut-" + (statusIconSeq++);
+  let inner;
+  if (status === "Verified") {
+    inner = '<path d="M4.3 8.4L6.8 10.9L11.7 5.4" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+  } else if (status === "Unsupported") {
+    inner = '<path d="M5.3 5.3L10.7 10.7M10.7 5.3L5.3 10.7" stroke="#000" stroke-width="2.1" stroke-linecap="round" fill="none"/>';
+  } else {
+    inner = '<text x="8" y="11.6" font-family="Arial,Helvetica,sans-serif" font-size="10.5" font-weight="700" text-anchor="middle" fill="#000">?</text>';
+  }
+  return '<svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true" focusable="false">'
+    + '<mask id="' + id + '"><rect width="16" height="16" fill="#fff"/>' + inner + '</mask>'
+    + '<circle cx="8" cy="8" r="7" fill="currentColor" mask="url(#' + id + ')"/></svg>';
+}
+
 const state = { query:"", category:"All" };
 
 function categoriesFor(){
@@ -589,6 +635,14 @@ function renderGrid(){
 
     tile.appendChild(f);
     tile.appendChild(l);
+
+    const status = getStatus(face);
+    const badge = document.createElement("span");
+    badge.className = "badge-status " + statusClass(status);
+    badge.title = status;
+    badge.innerHTML = statusBadgeSVG(status);
+    tile.appendChild(badge);
+
     tile.addEventListener("click", () => copyText(face, face));
     frag.appendChild(tile);
   });
@@ -614,6 +668,14 @@ function renderBlocks(){
 
     tile.appendChild(g);
     tile.appendChild(n);
+
+    const status = getStatus(glyph);
+    const badge = document.createElement("span");
+    badge.className = "badge-status " + statusClass(status);
+    badge.title = status;
+    badge.innerHTML = statusBadgeSVG(status);
+    tile.appendChild(badge);
+
     tile.addEventListener("click", () => copyText(glyph, glyph + " — " + name));
     frag.appendChild(tile);
   });

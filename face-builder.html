@@ -572,6 +572,12 @@ function statusBadgeSVG(status){
     + '<circle cx="8" cy="8" r="7" fill="currentColor" mask="url(#' + id + ')"/></svg>';
 }
 
+// Non-"Untested" exceptions for ready-made combos, keyed by the exact combo string
+// (combos are multi-character composites, so no single Alt code applies). Empty for
+// now — none have been marked yet in the tracker. Re-sync by hand when it changes.
+const COMBO_STATUS = {};
+function getComboStatus(content){ return COMBO_STATUS[content] || "Untested"; }
+
 const faceState = { category:"All", query:"" };
 
 function faceCategories(){
@@ -691,6 +697,14 @@ function renderCombos(){
 
     tile.appendChild(f);
     tile.appendChild(n);
+
+    const status = getComboStatus(face);
+    const badge = document.createElement("span");
+    badge.className = "badge-status " + statusClass(status);
+    badge.title = status;
+    badge.innerHTML = statusBadgeSVG(status);
+    tile.appendChild(badge);
+
     tile.addEventListener("click", () => copyText(face, cat + " face", ""));
     frag.appendChild(tile);
   });
