@@ -1,4 +1,4 @@
-# FFXI Chat Codes
+# Kaomoji Alt Emporium
 
 Three small reference pages for typing special characters and emoticons in Final Fantasy XI chat.
 
