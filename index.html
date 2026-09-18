@@ -218,17 +218,50 @@
     width:100%;
   }
   .search-box input::placeholder{color:var(--ink-muted);}
-  .count{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
+  .filter-toggle{
+    display:none;
+    align-items:center;
+    justify-content:center;
+    width:38px;
+    height:38px;
+    flex:none;
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--border-strong);
+    border-radius:9px;
     color:var(--ink-muted);
-    white-space:nowrap;
+    cursor:pointer;
+    padding:0;
+  }
+  .filter-toggle[aria-expanded="true"]{
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+  .filter-dot{
+    position:absolute;
+    top:5px;
+    right:5px;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--accent);
   }
 
   .chips{
     display:flex;
     flex-wrap:wrap;
     gap:6px;
+  }
+  @media (max-width:640px){
+    .filter-toggle{display:flex;}
+    .chips{
+      display:none;
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:9px;
+      padding:10px;
+    }
+    .chips.open{display:flex;}
   }
   .chip{
     font-family:'Silkscreen',monospace;
@@ -401,7 +434,10 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input id="search" type="text" placeholder="Search by mood or face…" autocomplete="off">
     </div>
-    <span class="count" id="count"></span>
+    <button class="filter-toggle" id="filterToggle" aria-label="Filter by mood" aria-expanded="false">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="4 4 20 4 14 12.5 14 19 10 21 10 12.5 4 4"/></svg>
+      <span class="filter-dot" id="filterDot" hidden></span>
+    </button>
   </div>
   <div class="chips" id="chips"></div>
 </div>
@@ -502,6 +538,8 @@ function categoriesFor(){
 
 function renderChips(){
   const chips = document.getElementById("chips");
+  const filterToggle = document.getElementById("filterToggle");
+  const filterDot = document.getElementById("filterDot");
   chips.innerHTML = "";
   categoriesFor().forEach(cat => {
     const b = document.createElement("button");
@@ -511,15 +549,18 @@ function renderChips(){
       state.category = cat;
       renderChips();
       renderGrid();
+      chips.classList.remove("open");
+      filterToggle.setAttribute("aria-expanded", "false");
     });
     chips.appendChild(b);
   });
+  filterDot.hidden = state.category === "All";
 }
 
 function renderGrid(){
   const grid = document.getElementById("grid");
   const empty = document.getElementById("empty");
-  const count = document.getElementById("count");
+  const search = document.getElementById("search");
   const q = state.query.trim().toLowerCase();
 
   const data = FACES.filter(([face, cat]) => {
@@ -529,7 +570,7 @@ function renderGrid(){
   });
 
   grid.innerHTML = "";
-  count.textContent = data.length + (data.length === 1 ? " face" : " faces");
+  search.placeholder = "Search by mood or face… (" + data.length + ")";
   empty.hidden = data.length !== 0;
 
   const frag = document.createDocumentFragment();
@@ -621,6 +662,12 @@ function copyText(value, label){
 document.getElementById("search").addEventListener("input", (e) => {
   state.query = e.target.value;
   renderGrid();
+});
+
+document.getElementById("filterToggle").addEventListener("click", (e) => {
+  const chips = document.getElementById("chips");
+  const isOpen = chips.classList.toggle("open");
+  e.currentTarget.setAttribute("aria-expanded", isOpen ? "true" : "false");
 });
 
 renderChips();
