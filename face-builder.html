@@ -188,10 +188,80 @@
     border-bottom:1px solid var(--border);
   }
 
+  .search-row{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+  .search-box{
+    flex:1;
+    min-width:180px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--surface);
+    border:1px solid var(--border-strong);
+    border-radius:9px;
+    padding:8px 12px;
+  }
+  .search-box svg{flex:none;opacity:0.55;}
+  .search-box input{
+    border:none;
+    outline:none;
+    background:transparent;
+    color:var(--ink);
+    font-family:'Archivo',sans-serif;
+    font-size:14px;
+    width:100%;
+  }
+  .search-box input::placeholder{color:var(--ink-muted);}
+
+  .filter-toggle{
+    display:none;
+    align-items:center;
+    justify-content:center;
+    width:38px;
+    height:38px;
+    flex:none;
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--border-strong);
+    border-radius:9px;
+    color:var(--ink-muted);
+    cursor:pointer;
+    padding:0;
+  }
+  .filter-toggle[aria-expanded="true"]{
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+  .filter-dot{
+    position:absolute;
+    top:5px;
+    right:5px;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--accent);
+  }
+
   .chips{
     display:flex;
     flex-wrap:wrap;
     gap:6px;
+  }
+  @media (max-width:640px){
+    .filter-toggle{display:flex;}
+    .chips{
+      display:none;
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:9px;
+      padding:10px;
+    }
+    .chips.open{display:flex;}
   }
   .chip{
     font-family:'Silkscreen',monospace;
@@ -280,6 +350,13 @@
   }
   .badge-confirm svg{display:block;}
 
+  .empty{
+    color:var(--ink-muted);
+    font-size:13.5px;
+    padding:30px 4px;
+    text-align:center;
+  }
+
   .footnote{
     margin-top:36px;
     padding-top:18px;
@@ -356,6 +433,16 @@
 </div>
 
 <div class="controls">
+  <div class="search-row">
+    <div class="search-box">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="search" type="text" placeholder="Search by mood, part, or combo…" autocomplete="off">
+    </div>
+    <button class="filter-toggle" id="filterToggle" aria-label="Filter by mood" aria-expanded="false">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="4 4 20 4 14 12.5 14 19 10 21 10 12.5 4 4"/></svg>
+      <span class="filter-dot" id="filterDot" hidden></span>
+    </button>
+  </div>
   <div class="chips" id="faceChips"></div>
 </div>
 
@@ -364,6 +451,7 @@
 
 <h3>Parts</h3>
 <div class="grid" id="faceGrid"></div>
+<div class="empty" id="empty" hidden>No matches. Try a different search term or category.</div>
 
 <div class="footnote">
   If you test other Legacy/OEM codes, report back either way and this list gets more accurate.
@@ -458,7 +546,7 @@ function confirmBadgeSVG(){
     + '<circle cx="8" cy="8" r="7" fill="currentColor" mask="url(#' + id + ')"/></svg>';
 }
 
-const faceState = { category:"All" };
+const faceState = { category:"All", query:"" };
 
 function faceCategories(){
   const set = new Set(FACE_PARTS.map(f => f[3]));
@@ -467,6 +555,8 @@ function faceCategories(){
 
 function renderFaceChips(){
   const chips = document.getElementById("faceChips");
+  const filterToggle = document.getElementById("filterToggle");
+  const filterDot = document.getElementById("filterDot");
   chips.innerHTML = "";
   faceCategories().forEach(cat => {
     const b = document.createElement("button");
@@ -477,15 +567,43 @@ function renderFaceChips(){
       renderFaceChips();
       renderFaceParts();
       renderCombos();
+      chips.classList.remove("open");
+      filterToggle.setAttribute("aria-expanded", "false");
     });
     chips.appendChild(b);
   });
+  filterDot.hidden = faceState.category === "All";
+}
+
+function updateSearchPlaceholder(){
+  const search = document.getElementById("search");
+  const empty = document.getElementById("empty");
+  const q = faceState.query.trim().toLowerCase();
+  const partsCount = FACE_PARTS.filter(([glyph, code, name, cat]) => {
+    if (faceState.category !== "All" && cat !== faceState.category) return false;
+    if (!q) return true;
+    return glyph.toLowerCase().includes(q) || name.toLowerCase().includes(q) || code.toLowerCase().includes(q) || cat.toLowerCase().includes(q);
+  }).length;
+  const combosCount = FACE_COMBOS.filter(([face, cat]) => {
+    if (faceState.category !== "All" && cat !== faceState.category) return false;
+    if (!q) return true;
+    return face.toLowerCase().includes(q) || cat.toLowerCase().includes(q);
+  }).length;
+  const total = partsCount + combosCount;
+  search.placeholder = "Search by mood, part, or combo… (" + total + ")";
+  empty.hidden = total !== 0;
 }
 
 function renderFaceParts(){
   const grid = document.getElementById("faceGrid");
   grid.innerHTML = "";
-  const data = FACE_PARTS.filter(([glyph, code, name, cat]) => faceState.category === "All" || cat === faceState.category);
+  const q = faceState.query.trim().toLowerCase();
+  const data = FACE_PARTS.filter(([glyph, code, name, cat]) => {
+    if (faceState.category !== "All" && cat !== faceState.category) return false;
+    if (!q) return true;
+    return glyph.toLowerCase().includes(q) || name.toLowerCase().includes(q) || code.toLowerCase().includes(q) || cat.toLowerCase().includes(q);
+  });
+  updateSearchPlaceholder();
   const frag = document.createDocumentFragment();
   data.forEach(([glyph, code, name, cat]) => {
     const tile = document.createElement("div");
@@ -526,7 +644,13 @@ function renderFaceParts(){
 function renderCombos(){
   const grid = document.getElementById("comboGrid");
   grid.innerHTML = "";
-  const data = FACE_COMBOS.filter(([face, cat]) => faceState.category === "All" || cat === faceState.category);
+  const q = faceState.query.trim().toLowerCase();
+  const data = FACE_COMBOS.filter(([face, cat]) => {
+    if (faceState.category !== "All" && cat !== faceState.category) return false;
+    if (!q) return true;
+    return face.toLowerCase().includes(q) || cat.toLowerCase().includes(q);
+  });
+  updateSearchPlaceholder();
   const frag = document.createDocumentFragment();
   data.forEach(([face, cat]) => {
     const tile = document.createElement("div");
@@ -589,6 +713,18 @@ function copyText(value, name, codeLabel){
     showToast(fallbackCopy(value) ? okLabel : failLabel);
   }
 }
+
+document.getElementById("search").addEventListener("input", (e) => {
+  faceState.query = e.target.value;
+  renderFaceParts();
+  renderCombos();
+});
+
+document.getElementById("filterToggle").addEventListener("click", (e) => {
+  const chips = document.getElementById("faceChips");
+  const isOpen = chips.classList.toggle("open");
+  e.currentTarget.setAttribute("aria-expanded", isOpen ? "true" : "false");
+});
 
 renderFaceChips();
 renderFaceParts();
