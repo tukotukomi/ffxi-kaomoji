@@ -271,11 +271,11 @@
     line-height:1.25;
   }
   .badge-confirm{
+    display:inline-flex;
     color:var(--confirm);
-    font-weight:700;
-    font-size:9.5px;
-    letter-spacing:0.02em;
+    margin-top:2px;
   }
+  .badge-confirm svg{display:block;}
 
   .footnote{
     margin-top:36px;
@@ -345,7 +345,7 @@
 <p class="subtitle">Emoticons built entirely from Alt codes confirmed to render in FFXI's chat font — type these straight from the keyboard, no clipboard paste needed.</p>
 
 <div class="tip">
-  Hold <b>Alt</b>, type the digits on the numeric keypad (Num Lock on), release — that's it. Every glyph here is either from the Windows (ANSI) Alt+0128–0255 range, which community testing confirms renders correctly in FFXI, or a Legacy/OEM code an actual player has verified in-client (marked "player-confirmed" on its tile).
+  Hold <b>Alt</b>, type the digits on the numeric keypad (Num Lock on), release — that's it. Every glyph here is either from the Windows (ANSI) Alt+0128–0255 range, which community testing confirms renders correctly in FFXI, or a Legacy/OEM code an actual player has verified in-client (marked with a checkmark on its tile).
   <br><br>
   Laptop with no numpad? Hold <code>Fn</code> to activate the embedded one (usually over J/K/L/U/I/O/7/8/9/M) before holding Alt.
   <br><br>
@@ -446,6 +446,15 @@ const FACE_COMBOS = [
 ["└(°_°)┐","Dance"]
 ];
 
+let confirmIconSeq = 0;
+function confirmBadgeSVG(){
+  const id = "confirm-cut-" + (confirmIconSeq++);
+  return '<svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true" focusable="false">'
+    + '<mask id="' + id + '"><rect width="16" height="16" fill="#fff"/>'
+    + '<path d="M4.3 8.4L6.8 10.9L11.7 5.4" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></mask>'
+    + '<circle cx="8" cy="8" r="7" fill="currentColor" mask="url(#' + id + ')"/></svg>';
+}
+
 const faceState = { category:"All" };
 
 function faceCategories(){
@@ -495,7 +504,8 @@ function renderFaceParts(){
       n.appendChild(document.createElement("br"));
       const badge = document.createElement("span");
       badge.className = "badge-confirm";
-      badge.textContent = "player-confirmed";
+      badge.title = "Player-confirmed";
+      badge.innerHTML = confirmBadgeSVG();
       n.appendChild(badge);
     } else {
       n.textContent = name;
