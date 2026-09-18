@@ -21,6 +21,7 @@
     --link:#4FE04F;
     --confirm:#66D9FF;
     --warn:#FF7FC0;
+    --danger:#FF5252;
   }
 
   *{box-sizing:border-box;}
@@ -341,14 +342,16 @@
     color:var(--ink-muted);
     line-height:1.25;
   }
-  .badge-confirm{
+  .badge-status{
     position:absolute;
     top:6px;
     right:6px;
     display:inline-flex;
-    color:var(--confirm);
   }
-  .badge-confirm svg{display:block;}
+  .badge-status svg{display:block;}
+  .badge-status.status-verified{color:var(--confirm);}
+  .badge-status.status-untested{color:var(--ink);}
+  .badge-status.status-unsupported{color:var(--danger);}
 
   .empty{
     color:var(--ink-muted);
@@ -486,14 +489,14 @@ const FACE_PARTS = [
 ["»","Alt+0187","Right angle quote — closed eye","Extras"],
 ["Þ","Alt+0222","Capital thorn — googly eye","Extras"],
 ["þ","Alt+0254","Lowercase thorn — little paw","Extras"],
-["┴","Alt+193","Table leg (player-confirmed)","Table Flip"],
-["─","Alt+196","Table edge (player-confirmed)","Table Flip"],
-["█","Alt+219","Table slab (player-confirmed)","Table Flip"],
-["│","Alt+179","Vertical bar frame (player-confirmed)","Frame"],
-["└","Alt+192","Corner, up+right (player-confirmed)","Dance"],
-["┘","Alt+217","Corner, up+left (player-confirmed)","Dance"],
-["┌","Alt+218","Corner, down+right (player-confirmed)","Dance"],
-["┐","Alt+191","Corner, down+left (player-confirmed)","Dance"]
+["┴","Alt+193","Table leg","Table Flip"],
+["─","Alt+196","Table edge","Table Flip"],
+["█","Alt+219","Table slab","Table Flip"],
+["│","Alt+179","Vertical bar frame","Frame"],
+["└","Alt+192","Corner, up+right","Dance"],
+["┘","Alt+217","Corner, up+left","Dance"],
+["┌","Alt+218","Corner, down+right","Dance"],
+["┐","Alt+191","Corner, down+left","Dance"]
 ];
 
 const FACE_COMBOS = [
@@ -533,12 +536,39 @@ const FACE_COMBOS = [
 ["└(°_°)┐","Dance"]
 ];
 
-let confirmIconSeq = 0;
-function confirmBadgeSVG(){
-  const id = "confirm-cut-" + (confirmIconSeq++);
+// Non-"Untested" exceptions pulled from Kaomoji_Alt_Emporium_Tracker.xlsx (Player Tested column).
+// Anything not listed here defaults to "Untested". Re-sync by hand when the tracker changes.
+const CODE_STATUS = {
+  "Alt+179":"Verified",
+  "Alt+186":"Unsupported",
+  "Alt+191":"Verified",
+  "Alt+192":"Verified",
+  "Alt+193":"Verified",
+  "Alt+196":"Verified",
+  "Alt+217":"Verified",
+  "Alt+218":"Verified",
+  "Alt+219":"Verified"
+};
+function getStatus(code){ return CODE_STATUS[code] || "Untested"; }
+function statusClass(status){
+  if (status === "Verified") return "status-verified";
+  if (status === "Unsupported") return "status-unsupported";
+  return "status-untested";
+}
+
+let statusIconSeq = 0;
+function statusBadgeSVG(status){
+  const id = "status-cut-" + (statusIconSeq++);
+  let inner;
+  if (status === "Verified") {
+    inner = '<path d="M4.3 8.4L6.8 10.9L11.7 5.4" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+  } else if (status === "Unsupported") {
+    inner = '<path d="M5.3 5.3L10.7 10.7M10.7 5.3L5.3 10.7" stroke="#000" stroke-width="2.1" stroke-linecap="round" fill="none"/>';
+  } else {
+    inner = '<text x="8" y="11.6" font-family="Arial,Helvetica,sans-serif" font-size="10.5" font-weight="700" text-anchor="middle" fill="#000">?</text>';
+  }
   return '<svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true" focusable="false">'
-    + '<mask id="' + id + '"><rect width="16" height="16" fill="#fff"/>'
-    + '<path d="M4.3 8.4L6.8 10.9L11.7 5.4" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></mask>'
+    + '<mask id="' + id + '"><rect width="16" height="16" fill="#fff"/>' + inner + '</mask>'
     + '<circle cx="8" cy="8" r="7" fill="currentColor" mask="url(#' + id + ')"/></svg>';
 }
 
@@ -616,20 +646,18 @@ function renderFaceParts(){
 
     const n = document.createElement("div");
     n.className = "name";
-    const isConfirmed = name.includes("(player-confirmed)");
-    n.textContent = isConfirmed ? name.replace(" (player-confirmed)", "") : name;
+    n.textContent = name;
 
     tile.appendChild(g);
     tile.appendChild(c);
     tile.appendChild(n);
 
-    if (isConfirmed) {
-      const badge = document.createElement("span");
-      badge.className = "badge-confirm";
-      badge.title = "Player-confirmed";
-      badge.innerHTML = confirmBadgeSVG();
-      tile.appendChild(badge);
-    }
+    const status = getStatus(code);
+    const badge = document.createElement("span");
+    badge.className = "badge-status " + statusClass(status);
+    badge.title = status;
+    badge.innerHTML = statusBadgeSVG(status);
+    tile.appendChild(badge);
 
     tile.addEventListener("click", () => copyText(glyph, name, code));
     frag.appendChild(tile);
