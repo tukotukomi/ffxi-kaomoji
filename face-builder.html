@@ -460,95 +460,8 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="data.js" charset="utf-8"></script>
 <script>
-const FACE_PARTS = [
-["°","Alt+0176","Degree sign — eye","Happy"],
-["•","Alt+0149","Bullet — eye","Happy"],
-["¤","Alt+0164","Currency sign — sparkle eye","Happy"],
-["¨","Alt+0168","Diaeresis — wide eyes","Surprised"],
-["ˆ","Alt+0136","Circumflex accent — raised brow","Surprised"],
-["¡","Alt+0161","Inverted exclamation","Surprised"],
-["¿","Alt+0191","Inverted question mark","Confused"],
-["±","Alt+0177","Plus-minus sign","Confused"],
-["¬","Alt+0172","Not sign — flat brow","Annoyed"],
-["¦","Alt+0166","Broken bar — narrowed eye","Annoyed"],
-["¯","Alt+0175","Macron — flat, closed eye","Deadpan"],
-["…","Alt+0133","Ellipsis — speechless mouth","Deadpan"],
-["×","Alt+0215","Multiplication sign — x eyes","Dead"],
-["÷","Alt+0247","Division sign — dizzy eyes","Dead"],
-["†","Alt+0134","Dagger","Dead"],
-["‡","Alt+0135","Double dagger","Dead"],
-["„","Alt+0132","Low double quote — tear","Sad"],
-["´","Alt+0180","Acute accent — eyebrow","Extras"],
-["¸","Alt+0184","Cedilla — chin mark","Extras"],
-["§","Alt+0167","Section sign","Extras"],
-["¶","Alt+0182","Pilcrow sign","Extras"],
-["‹","Alt+0139","Single left angle quote — eye","Extras"],
-["›","Alt+0155","Single right angle quote — eye","Extras"],
-["«","Alt+0171","Left angle quote — closed eye","Extras"],
-["»","Alt+0187","Right angle quote — closed eye","Extras"],
-["Þ","Alt+0222","Capital thorn — googly eye","Extras"],
-["þ","Alt+0254","Lowercase thorn — little paw","Extras"],
-["┴","Alt+193","Table leg","Table Flip"],
-["─","Alt+196","Table edge","Table Flip"],
-["█","Alt+219","Table slab","Table Flip"],
-["│","Alt+179","Vertical bar frame","Frame"],
-["└","Alt+192","Corner, up+right","Dance"],
-["┘","Alt+217","Corner, up+left","Dance"],
-["┌","Alt+218","Corner, down+right","Dance"],
-["┐","Alt+191","Corner, down+left","Dance"]
-];
-
-const FACE_COMBOS = [
-["(°_°)","Happy"],
-["(•_•)","Happy"],
-["(¤_¤)","Happy"],
-["þ(°_°)þ","Happy"],
-["(¨_¨)","Surprised"],
-["(ˆ_ˆ)","Surprised"],
-["(¡_¡)","Surprised"],
-["(ÞoÞ)","Surprised"],
-["(¿_¿)","Confused"],
-["(±_±)","Confused"],
-["(¬_¬)","Annoyed"],
-["(¦_¦)","Annoyed"],
-["(¬Þ¬)","Annoyed"],
-["(¯_¯)","Deadpan"],
-["(-…-)","Deadpan"],
-["(×_×)","Dead"],
-["(÷_÷)","Dead"],
-["(†_†)","Dead"],
-["(‡_‡)","Dead"],
-["(;_;)„","Sad"],
-["(«_«)","Extras"],
-["(»_»)","Extras"],
-["(´_´)","Extras"],
-["(Þ_Þ)","Extras"],
-["(¬_¬) ┴─┴","Table Flip"],
-["┴─┴ (°_°)","Table Flip"],
-["(×_×) ┴─┴","Table Flip"],
-["│¬_¬│","Frame"],
-["│×_×│","Frame"],
-["│°_°│","Frame"],
-["┌(°_°)┐","Dance"],
-["└(¬_¬)┘","Dance"],
-["┌(¯_¯)┘","Dance"],
-["└(°_°)┐","Dance"]
-];
-
-// Non-"Untested" exceptions pulled from Kaomoji_Alt_Emporium_Tracker.xlsx (Player Tested column).
-// Anything not listed here defaults to "Untested". Re-sync by hand when the tracker changes.
-const CODE_STATUS = {
-  "Alt+179":"Verified",
-  "Alt+186":"Unsupported",
-  "Alt+191":"Verified",
-  "Alt+192":"Verified",
-  "Alt+193":"Verified",
-  "Alt+196":"Verified",
-  "Alt+217":"Verified",
-  "Alt+218":"Verified",
-  "Alt+219":"Verified"
-};
 function getStatus(code){ return CODE_STATUS[code] || "Untested"; }
 function statusClass(status){
   if (status === "Verified") return "status-verified";
@@ -572,16 +485,12 @@ function statusBadgeSVG(status){
     + '<circle cx="8" cy="8" r="7" fill="currentColor" mask="url(#' + id + ')"/></svg>';
 }
 
-// Non-"Untested" exceptions for ready-made combos, keyed by the exact combo string
-// (combos are multi-character composites, so no single Alt code applies). Empty for
-// now — none have been marked yet in the tracker. Re-sync by hand when it changes.
-const COMBO_STATUS = {};
 function getComboStatus(content){ return COMBO_STATUS[content] || "Untested"; }
 
 const faceState = { category:"All", query:"" };
 
 function faceCategories(){
-  const set = new Set(FACE_PARTS.map(f => f[3]));
+  const set = new Set([...FACE_PARTS.map(f => f[3]), ...FACE_COMBOS.map(f => f[1])]);
   return ["All", ...Array.from(set)];
 }
 
