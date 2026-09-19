@@ -476,6 +476,8 @@ const CONTENT_STATUS = {
 "m(_ _)m":"Verified",
 "orz":"Verified",
 "(￣▽￣;)":"Verified",
+"(・・;)":"Verified",
+"(=^・ω・^=)":"Verified",
 "ヽ(=^・ω・^=)丿":"Verified",
 "٩(๑`^´๑)۶":"Unsupported",
 "(๑•̀ㅂ•́)و":"Unsupported",
