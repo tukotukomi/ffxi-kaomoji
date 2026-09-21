@@ -44,7 +44,18 @@ const FACES = [
 ["٩(๑`^´๑)۶","Determined"],
 ["(๑•̀ㅂ•́)و","Determined"],
 ["♪(´▽｀)","Music"],
-["└(＾o＾)┘","Dance"]
+["└(＾o＾)┘","Dance"],
+["(つ≧▽≦)つ","Uncategorized"],
+["(つ☆ω☆)つ","Uncategorized"],
+["(づ ◕‿◕ )づ","Uncategorized"],
+["(⊃｡•́‿•̀｡)⊃","Uncategorized"],
+["(っಠ‿ಠ)っ","Uncategorized"],
+["(づ◡﹏◡)づ","Uncategorized"],
+["⊂(￣▽￣)⊃","Uncategorized"],
+["(°◡°♡)","Uncategorized"],
+["(´♡‿♡)","Uncategorized"],
+["⊂(´• ω •⊂)","Uncategorized"],
+["(☆ω☆)","Uncategorized"]
 ];
 
 const BLOCKS = [
@@ -482,7 +493,19 @@ const CONTENT_STATUS = {
 "٩(๑`^´๑)۶":"Unsupported",
 "(๑•̀ㅂ•́)و":"Unsupported",
 "♪(´▽｀)":"Verified",
-"└(＾o＾)┘":"Verified"
+"└(＾o＾)┘":"Verified",
+"(つ≧▽≦)つ":"Verified",
+"(つ☆ω☆)つ":"Verified",
+"(づ◡﹏◡)づ":"Unsupported",
+"⊂(￣▽￣)⊃":"Verified",
+"(°◡°♡)":"Unsupported",
+"(´♡‿♡)":"Unsupported",
+"⊂(´• ω •⊂)":"Unsupported",
+"(☆ω☆)":"Verified",
+"（":"Verified",
+"）":"Verified",
+"＾":"Verified",
+"□":"Verified"
 };
 
 const COMBO_STATUS = {
