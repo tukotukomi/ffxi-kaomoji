@@ -268,6 +268,57 @@
     background:var(--accent);
   }
 
+  .status-filter-wrap{position:relative;flex:none;}
+  .status-filter-toggle{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:38px;
+    height:38px;
+    flex:none;
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--border-strong);
+    border-radius:9px;
+    color:var(--ink-muted);
+    cursor:pointer;
+    padding:0;
+  }
+  .status-filter-toggle[aria-expanded="true"]{
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+  .status-filter-panel{
+    position:absolute;
+    top:calc(100% + 6px);
+    right:0;
+    background:var(--surface);
+    border:1px solid var(--border-strong);
+    border-radius:9px;
+    padding:8px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    z-index:20;
+    box-shadow:0 10px 24px -10px rgba(0,0,0,0.5);
+    min-width:150px;
+  }
+  .status-filter-panel[hidden]{display:none;}
+  .status-filter-option{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Archivo',sans-serif;
+    font-size:12.5px;
+    color:var(--ink);
+    padding:6px 8px;
+    border-radius:6px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .status-filter-option:hover{background:var(--surface-2);}
+  .status-filter-option input{margin:0;accent-color:var(--accent);}
+
   .chips{
     display:flex;
     flex-wrap:wrap;
@@ -468,6 +519,17 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="4 4 20 4 14 12.5 14 19 10 21 10 12.5 4 4"/></svg>
       <span class="filter-dot" id="filterDot" hidden></span>
     </button>
+    <div class="status-filter-wrap">
+      <button class="status-filter-toggle" id="statusFilterToggle" aria-label="Filter by testing status" aria-expanded="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="filter-dot" id="statusFilterDot" hidden></span>
+      </button>
+      <div class="status-filter-panel" id="statusFilterPanel" hidden>
+        <label class="status-filter-option"><input type="checkbox" data-status="Verified"> Verified</label>
+        <label class="status-filter-option"><input type="checkbox" data-status="Untested"> Untested</label>
+        <label class="status-filter-option"><input type="checkbox" data-status="Unsupported"> Unsupported</label>
+      </div>
+    </div>
   </div>
   <div class="chips" id="faceChips"></div>
 </div>
@@ -548,11 +610,13 @@ function updateSearchPlaceholder(){
   const q = faceState.query.trim().toLowerCase();
   const partsCount = FACE_PARTS.filter(([glyph, code, name, cat]) => {
     if (faceState.category !== "All" && cat !== faceState.category) return false;
+    if (!isStatusVisible(getStatus(code))) return false;
     if (!q) return true;
     return glyph.toLowerCase().includes(q) || name.toLowerCase().includes(q) || code.toLowerCase().includes(q) || cat.toLowerCase().includes(q);
   }).length;
   const combosCount = FACE_COMBOS.filter(([face, cat]) => {
     if (faceState.category !== "All" && cat !== faceState.category) return false;
+    if (!isStatusVisible(getComboStatus(face))) return false;
     if (!q) return true;
     return face.toLowerCase().includes(q) || cat.toLowerCase().includes(q);
   }).length;
@@ -567,6 +631,7 @@ function renderFaceParts(){
   const q = faceState.query.trim().toLowerCase();
   const data = FACE_PARTS.filter(([glyph, code, name, cat]) => {
     if (faceState.category !== "All" && cat !== faceState.category) return false;
+    if (!isStatusVisible(getStatus(code))) return false;
     if (!q) return true;
     return glyph.toLowerCase().includes(q) || name.toLowerCase().includes(q) || code.toLowerCase().includes(q) || cat.toLowerCase().includes(q);
   });
@@ -612,6 +677,7 @@ function renderCombos(){
   const q = faceState.query.trim().toLowerCase();
   const data = FACE_COMBOS.filter(([face, cat]) => {
     if (faceState.category !== "All" && cat !== faceState.category) return false;
+    if (!isStatusVisible(getComboStatus(face))) return false;
     if (!q) return true;
     return face.toLowerCase().includes(q) || cat.toLowerCase().includes(q);
   });
@@ -697,6 +763,11 @@ document.getElementById("filterToggle").addEventListener("click", (e) => {
   const chips = document.getElementById("faceChips");
   const isOpen = chips.classList.toggle("open");
   e.currentTarget.setAttribute("aria-expanded", isOpen ? "true" : "false");
+});
+
+initStatusFilterUI(() => {
+  renderFaceParts();
+  renderCombos();
 });
 
 renderFaceChips();

@@ -285,6 +285,57 @@
     background:var(--accent);
   }
 
+  .status-filter-wrap{position:relative;flex:none;}
+  .status-filter-toggle{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:38px;
+    height:38px;
+    flex:none;
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--border-strong);
+    border-radius:9px;
+    color:var(--ink-muted);
+    cursor:pointer;
+    padding:0;
+  }
+  .status-filter-toggle[aria-expanded="true"]{
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+  .status-filter-panel{
+    position:absolute;
+    top:calc(100% + 6px);
+    right:0;
+    background:var(--surface);
+    border:1px solid var(--border-strong);
+    border-radius:9px;
+    padding:8px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    z-index:20;
+    box-shadow:0 10px 24px -10px rgba(0,0,0,0.5);
+    min-width:150px;
+  }
+  .status-filter-panel[hidden]{display:none;}
+  .status-filter-option{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Archivo',sans-serif;
+    font-size:12.5px;
+    color:var(--ink);
+    padding:6px 8px;
+    border-radius:6px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .status-filter-option:hover{background:var(--surface-2);}
+  .status-filter-option input{margin:0;accent-color:var(--accent);}
+
   .chips{
     display:flex;
     flex-wrap:wrap;
@@ -478,6 +529,17 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="4 4 20 4 14 12.5 14 19 10 21 10 12.5 4 4"/></svg>
       <span class="filter-dot" id="filterDot" hidden></span>
     </button>
+    <div class="status-filter-wrap">
+      <button class="status-filter-toggle" id="statusFilterToggle" aria-label="Filter by testing status" aria-expanded="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="filter-dot" id="statusFilterDot" hidden></span>
+      </button>
+      <div class="status-filter-panel" id="statusFilterPanel" hidden>
+        <label class="status-filter-option"><input type="checkbox" data-status="Verified"> Verified</label>
+        <label class="status-filter-option"><input type="checkbox" data-status="Untested"> Untested</label>
+        <label class="status-filter-option"><input type="checkbox" data-status="Unsupported"> Unsupported</label>
+      </div>
+    </div>
   </div>
   <div class="chips" id="chips"></div>
 </div>
@@ -525,6 +587,9 @@ const PLACEHOLDER_GLYPHS = new Set(["NBSP","SHY"]);
 
 function currentData(){ return state.tab === "ansi" ? ANSI_DATA : OEM_DATA; }
 function prefix(){ return state.tab === "ansi" ? "Alt+0" : "Alt+"; }
+function codeLabelFor(code){
+  return state.tab === "ansi" ? "Alt+0" + String(code).padStart(3, "0") : "Alt+" + code;
+}
 
 function categoriesFor(data){
   const set = new Set(data.map(d => d[3]));
@@ -559,9 +624,10 @@ function renderGrid(){
   const q = state.query.trim().toLowerCase();
   const data = currentData().filter(([code, glyph, name, cat]) => {
     if (state.category !== "All" && cat !== state.category) return false;
+    const codeLabel = codeLabelFor(code);
+    if (!isStatusVisible(getStatus(codeLabel))) return false;
     if (!q) return true;
-    const codeStr = (prefix() + String(code).padStart(state.tab === "ansi" ? 4 : (code < 100 ? 3 : 3), "0")).toLowerCase();
-    return name.toLowerCase().includes(q) || glyph.toLowerCase().includes(q) || String(code).includes(q) || codeStr.includes(q);
+    return name.toLowerCase().includes(q) || glyph.toLowerCase().includes(q) || String(code).includes(q) || codeLabel.toLowerCase().includes(q);
   });
 
   grid.innerHTML = "";
@@ -570,9 +636,7 @@ function renderGrid(){
 
   const frag = document.createDocumentFragment();
   data.forEach(([code, glyph, name, cat]) => {
-    const codeLabel = state.tab === "ansi"
-      ? "Alt+0" + String(code).padStart(3, "0")
-      : "Alt+" + code;
+    const codeLabel = codeLabelFor(code);
 
     const tile = document.createElement("div");
     tile.className = "tile";
@@ -670,6 +734,10 @@ document.getElementById("filterToggle").addEventListener("click", (e) => {
   const chips = document.getElementById("chips");
   const isOpen = chips.classList.toggle("open");
   e.currentTarget.setAttribute("aria-expanded", isOpen ? "true" : "false");
+});
+
+initStatusFilterUI(() => {
+  renderGrid();
 });
 
 renderChips();

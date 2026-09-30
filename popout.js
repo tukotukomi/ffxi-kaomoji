@@ -10,9 +10,79 @@
 
 const PLACEHOLDER_GLYPHS_POPOUT = new Set(["NBSP","SHY"]);
 
+// Shared testing-status filter (Verified / Untested / Unsupported), backed by
+// localStorage so it's consistent across all 3 pages and the pop-out panel.
+const STATUS_FILTER_KEY = "kaeStatusFilter";
+const STATUS_FILTER_ALL = ["Verified", "Untested", "Unsupported"];
+const STATUS_FILTER_DEFAULT = ["Verified", "Untested"];
+
+function getStatusFilter(){
+  try {
+    const raw = localStorage.getItem(STATUS_FILTER_KEY);
+    if (raw === null) return STATUS_FILTER_DEFAULT.slice();
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return STATUS_FILTER_DEFAULT.slice();
+    return arr.filter(s => STATUS_FILTER_ALL.includes(s));
+  } catch (e) {
+    return STATUS_FILTER_DEFAULT.slice();
+  }
+}
+
+function setStatusFilter(list){
+  try { localStorage.setItem(STATUS_FILTER_KEY, JSON.stringify(list)); } catch (e) {}
+}
+
+function isStatusVisible(status){
+  return getStatusFilter().includes(status);
+}
+
+// Wires a status-filter toggle button + panel already present in the page
+// (a button#statusFilterToggle and a panel#statusFilterPanel containing
+// checkbox inputs with data-status attributes). Calls onChange() whenever
+// the selection changes so the caller can re-render its grid(s).
+function initStatusFilterUI(onChange){
+  const toggle = document.getElementById("statusFilterToggle");
+  const panel = document.getElementById("statusFilterPanel");
+  const dot = document.getElementById("statusFilterDot");
+  if (!toggle || !panel) return;
+  const boxes = [...panel.querySelectorAll("input[type=checkbox]")];
+
+  function syncDot(){
+    if (!dot) return;
+    const current = getStatusFilter().slice().sort().join(",");
+    dot.hidden = current === STATUS_FILTER_DEFAULT.slice().sort().join(",");
+  }
+
+  const active = getStatusFilter();
+  boxes.forEach(b => { b.checked = active.includes(b.dataset.status); });
+  syncDot();
+
+  boxes.forEach(b => {
+    b.addEventListener("change", () => {
+      setStatusFilter(boxes.filter(x => x.checked).map(x => x.dataset.status));
+      syncDot();
+      onChange();
+    });
+  });
+
+  toggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = panel.hidden;
+    panel.hidden = !isOpen;
+    toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  });
+  document.addEventListener("click", (e) => {
+    if (!panel.hidden && !panel.contains(e.target) && !toggle.contains(e.target)) {
+      panel.hidden = true;
+      toggle.setAttribute("aria-expanded", "false");
+    }
+  });
+}
+
 function gatherPopoutData(){
   return {
-    FACES, BLOCKS, FACE_PARTS, FACE_COMBOS, ANSI_DATA, OEM_DATA
+    FACES, BLOCKS, FACE_PARTS, FACE_COMBOS, ANSI_DATA, OEM_DATA,
+    CONTENT_STATUS, COMBO_STATUS, CODE_STATUS
   };
 }
 
@@ -43,6 +113,10 @@ const POPOUT_CSS = `
     padding:8px 0;
     background:var(--surface);
     border-right:1px solid var(--border);
+  }
+  .p-rail-item{
+    flex:none;
+    display:flex;
     position:relative;
   }
   .p-rail-btn{
@@ -64,7 +138,7 @@ const POPOUT_CSS = `
   .p-nav-flyout{
     position:absolute;
     left:100%;
-    top:8px;
+    top:0;
     margin-left:4px;
     background:var(--surface-2);
     border:1px solid var(--border-strong);
@@ -92,6 +166,21 @@ const POPOUT_CSS = `
   }
   .p-nav-option:hover{background:var(--surface);}
   .p-nav-option.active{background:var(--accent);color:var(--accent-ink);}
+  .p-status-option{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'Archivo',sans-serif;
+    font-weight:600;
+    font-size:12px;
+    color:var(--ink);
+    padding:8px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .p-status-option:hover{background:var(--surface);}
+  .p-status-option input{margin:0;accent-color:var(--accent);}
   .p-main{
     flex:1;
     min-width:0;
@@ -217,6 +306,7 @@ const POPOUT_CSS = `
 
 const ICON_MENU = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
 const ICON_SEARCH = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+const ICON_EYE = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
 
 const POPOUT_MAIN_TABS = [["kaomoji","Kaomoji"], ["face","Face Builder"], ["alt","Alt Codes"]];
 
@@ -225,22 +315,28 @@ function popoutOemCode(code){ return "Alt+" + code; }
 
 function popoutRows(mainTab, subTab, data){
   if (mainTab === "kaomoji" && subTab === "faces") {
-    return data.FACES.map(([content, cat]) => ({ glyph: content, cap: cat, value: content }));
+    return data.FACES.map(([content, cat]) => ({ glyph: content, cap: cat, value: content, status: data.CONTENT_STATUS[content] || "Untested" }));
   }
   if (mainTab === "kaomoji" && subTab === "parts") {
-    return data.BLOCKS.map(([glyph, name]) => ({ glyph, cap: name, value: glyph }));
+    return data.BLOCKS.map(([glyph, name]) => ({ glyph, cap: name, value: glyph, status: data.CONTENT_STATUS[glyph] || "Untested" }));
   }
   if (mainTab === "face" && subTab === "combos") {
-    return data.FACE_COMBOS.map(([content, cat]) => ({ glyph: content, cap: cat, value: content }));
+    return data.FACE_COMBOS.map(([content, cat]) => ({ glyph: content, cap: cat, value: content, status: data.COMBO_STATUS[content] || "Untested" }));
   }
   if (mainTab === "face" && subTab === "parts") {
-    return data.FACE_PARTS.map(([glyph, code, name, cat]) => ({ glyph, cap: code, value: glyph }));
+    return data.FACE_PARTS.map(([glyph, code, name, cat]) => ({ glyph, cap: code, value: glyph, status: data.CODE_STATUS[code] || "Untested" }));
   }
   if (mainTab === "alt" && subTab === "ansi") {
-    return data.ANSI_DATA.map(([code, glyph, name, cat]) => ({ glyph, cap: popoutAnsiCode(code), value: glyph, ph: PLACEHOLDER_GLYPHS_POPOUT.has(glyph) }));
+    return data.ANSI_DATA.map(([code, glyph, name, cat]) => {
+      const codeLabel = popoutAnsiCode(code);
+      return { glyph, cap: codeLabel, value: glyph, ph: PLACEHOLDER_GLYPHS_POPOUT.has(glyph), status: data.CODE_STATUS[codeLabel] || "Untested" };
+    });
   }
   if (mainTab === "alt" && subTab === "legacy") {
-    return data.OEM_DATA.map(([code, glyph, name, cat]) => ({ glyph, cap: popoutOemCode(code), value: glyph, ph: PLACEHOLDER_GLYPHS_POPOUT.has(glyph) }));
+    return data.OEM_DATA.map(([code, glyph, name, cat]) => {
+      const codeLabel = popoutOemCode(code);
+      return { glyph, cap: codeLabel, value: glyph, ph: PLACEHOLDER_GLYPHS_POPOUT.has(glyph), status: data.CODE_STATUS[codeLabel] || "Untested" };
+    });
   }
   return [];
 }
@@ -275,6 +371,9 @@ function buildPopoutUI(doc, data){
 
   const railEl = doc.createElement("div");
   railEl.className = "p-rail";
+
+  const navItem = doc.createElement("div");
+  navItem.className = "p-rail-item";
   const navBtn = doc.createElement("button");
   navBtn.className = "p-rail-btn";
   navBtn.type = "button";
@@ -283,14 +382,34 @@ function buildPopoutUI(doc, data){
   const navFlyout = doc.createElement("div");
   navFlyout.className = "p-nav-flyout";
   navFlyout.hidden = true;
+  navItem.appendChild(navBtn);
+  navItem.appendChild(navFlyout);
+
+  const searchItem = doc.createElement("div");
+  searchItem.className = "p-rail-item";
   const searchBtn = doc.createElement("button");
   searchBtn.className = "p-rail-btn";
   searchBtn.type = "button";
   searchBtn.title = "Search";
   searchBtn.innerHTML = ICON_SEARCH;
-  railEl.appendChild(navBtn);
-  railEl.appendChild(navFlyout);
-  railEl.appendChild(searchBtn);
+  searchItem.appendChild(searchBtn);
+
+  const statusItem = doc.createElement("div");
+  statusItem.className = "p-rail-item";
+  const statusBtn = doc.createElement("button");
+  statusBtn.className = "p-rail-btn";
+  statusBtn.type = "button";
+  statusBtn.title = "Filter by status";
+  statusBtn.innerHTML = ICON_EYE;
+  const statusFlyout = doc.createElement("div");
+  statusFlyout.className = "p-nav-flyout";
+  statusFlyout.hidden = true;
+  statusItem.appendChild(statusBtn);
+  statusItem.appendChild(statusFlyout);
+
+  railEl.appendChild(navItem);
+  railEl.appendChild(searchItem);
+  railEl.appendChild(statusItem);
 
   const mainEl = doc.createElement("div");
   mainEl.className = "p-main";
@@ -363,6 +482,7 @@ function buildPopoutUI(doc, data){
   function renderGrid(){
     const q = state.query.trim().toLowerCase();
     const rows = popoutRows(state.main, state.sub, data).filter(r => {
+      if (!isStatusVisible(r.status)) return false;
       if (!q) return true;
       return r.glyph.toLowerCase().includes(q) || (r.cap || "").toLowerCase().includes(q);
     });
@@ -416,15 +536,50 @@ function buildPopoutUI(doc, data){
     });
   }
 
+  function renderStatusFlyout(){
+    statusFlyout.innerHTML = "";
+    const active = getStatusFilter();
+    STATUS_FILTER_ALL.forEach(status => {
+      const label = doc.createElement("label");
+      label.className = "p-status-option";
+      const cb = doc.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = active.includes(status);
+      cb.addEventListener("change", () => {
+        const cur = getStatusFilter();
+        setStatusFilter(cb.checked ? [...cur, status] : cur.filter(s => s !== status));
+        renderGrid();
+      });
+      const span = doc.createElement("span");
+      span.textContent = status;
+      label.appendChild(cb);
+      label.appendChild(span);
+      statusFlyout.appendChild(label);
+    });
+  }
+
   navBtn.addEventListener("click", (e) => {
     e.stopPropagation();
+    statusFlyout.hidden = true;
+    statusBtn.classList.remove("active");
     navFlyout.hidden = !navFlyout.hidden;
     navBtn.classList.toggle("active", !navFlyout.hidden);
+  });
+  statusBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    navFlyout.hidden = true;
+    navBtn.classList.remove("active");
+    statusFlyout.hidden = !statusFlyout.hidden;
+    statusBtn.classList.toggle("active", !statusFlyout.hidden);
   });
   doc.addEventListener("click", (e) => {
     if (!navFlyout.hidden && e.target !== navBtn && !navFlyout.contains(e.target)) {
       navFlyout.hidden = true;
       navBtn.classList.remove("active");
+    }
+    if (!statusFlyout.hidden && e.target !== statusBtn && !statusFlyout.contains(e.target)) {
+      statusFlyout.hidden = true;
+      statusBtn.classList.remove("active");
     }
   });
 
@@ -454,6 +609,7 @@ function buildPopoutUI(doc, data){
   });
 
   renderNavFlyout();
+  renderStatusFlyout();
   renderSubtabs();
   renderGrid();
 }
