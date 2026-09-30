@@ -468,5 +468,9 @@ async function openKaomojiPopout(){
       // fall through to plain window
     }
   }
-  window.open("popout.html", "kaomojiPopout", "width=360,height=600,resizable=yes");
+  window.open(
+    "popout.html",
+    "kaomojiPopout",
+    "width=360,height=600,resizable=yes,menubar=no,toolbar=no,location=no,status=no,scrollbars=no"
+  );
 }
