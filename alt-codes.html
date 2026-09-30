@@ -99,6 +99,26 @@
     flex:none;
     padding:0;
   }
+  .topnav-actions{
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .popout-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:34px;
+    height:34px;
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--ink);
+    cursor:pointer;
+    flex:none;
+    padding:0;
+  }
+  .popout-btn:hover{border-color:var(--accent);color:var(--accent);}
   @media (max-width:640px){
     .topnav-brand{font-size:11px;}
     .topnav-toggle{display:flex;}
@@ -421,13 +441,18 @@
 <nav class="topnav" id="topnav">
   <div class="topnav-inner">
     <a class="topnav-brand" href="index.html">KAOMOJI ALT EMPORIUM</a>
-    <button class="topnav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
-    <div class="topnav-links" id="navLinks">
-      <a class="topnav-link" href="index.html">Kaomoji</a>
-      <a class="topnav-link" href="face-builder.html">Face Builder</a>
-      <a class="topnav-link active" href="alt-codes.html">Alt Code Reference</a>
+    <div class="topnav-actions">
+      <button class="popout-btn" id="popoutBtn" aria-label="Pop out always-on-top panel" title="Pop out always-on-top panel">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+      </button>
+      <div class="topnav-links" id="navLinks">
+        <a class="topnav-link" href="index.html">Kaomoji</a>
+        <a class="topnav-link" href="face-builder.html">Face Builder</a>
+        <a class="topnav-link active" href="alt-codes.html">Alt Code Reference</a>
+      </div>
+      <button class="topnav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
     </div>
   </div>
 </nav>
@@ -470,6 +495,7 @@
 <div class="toast" id="toast"></div>
 
 <script src="data.js" charset="utf-8"></script>
+<script src="popout.js" charset="utf-8"></script>
 <script>
 function getStatus(code){ return CODE_STATUS[code] || "Untested"; }
 function statusClass(status){
@@ -663,6 +689,9 @@ if (navToggle && topnav) {
     }
   });
 }
+
+const popoutBtn = document.getElementById("popoutBtn");
+if (popoutBtn) popoutBtn.addEventListener("click", openKaomojiPopout);
 </script>
 </body>
 </html>
