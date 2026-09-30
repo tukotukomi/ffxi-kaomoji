@@ -31,40 +31,41 @@ const POPOUT_CSS = `
     color:var(--ink);
     font-family:'Archivo',system-ui,-apple-system,Segoe UI,sans-serif;
     display:flex;
-    flex-direction:column;
+    flex-direction:row;
   }
-  .p-topbar{
+  .p-rail{
     flex:none;
+    width:26px;
     display:flex;
+    flex-direction:column;
     align-items:center;
     gap:6px;
-    padding:8px;
-    border-bottom:1px solid var(--border);
+    padding:8px 0;
     background:var(--surface);
+    border-right:1px solid var(--border);
     position:relative;
   }
-  .p-topbar-spacer{flex:1;}
-  .p-icon-btn{
+  .p-rail-btn{
     flex:none;
-    width:28px;
-    height:28px;
+    width:20px;
+    height:20px;
     display:flex;
     align-items:center;
     justify-content:center;
     background:transparent;
     border:1px solid var(--border);
-    border-radius:7px;
+    border-radius:6px;
     color:var(--ink-muted);
     cursor:pointer;
     padding:0;
   }
-  .p-icon-btn:hover{border-color:var(--accent);color:var(--accent);}
-  .p-icon-btn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);}
-  .p-nav-popover{
+  .p-rail-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .p-rail-btn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);}
+  .p-nav-flyout{
     position:absolute;
-    top:100%;
-    left:8px;
-    margin-top:4px;
+    left:100%;
+    top:8px;
+    margin-left:4px;
     background:var(--surface-2);
     border:1px solid var(--border-strong);
     border-radius:8px;
@@ -76,7 +77,7 @@ const POPOUT_CSS = `
     box-shadow:0 8px 20px -6px rgba(0,0,0,0.5);
     min-width:140px;
   }
-  .p-nav-popover[hidden]{display:none;}
+  .p-nav-flyout[hidden]{display:none;}
   .p-nav-option{
     font-family:'Archivo',sans-serif;
     font-weight:600;
@@ -91,6 +92,12 @@ const POPOUT_CSS = `
   }
   .p-nav-option:hover{background:var(--surface);}
   .p-nav-option.active{background:var(--accent);color:var(--accent-ink);}
+  .p-main{
+    flex:1;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+  }
   .p-search-row{
     flex:none;
     display:flex;
@@ -114,7 +121,7 @@ const POPOUT_CSS = `
     flex:none;
     display:flex;
     gap:4px;
-    padding:0 8px 8px;
+    padding:8px;
   }
   .p-subtab{
     font-family:'Archivo',sans-serif;
@@ -208,8 +215,8 @@ const POPOUT_CSS = `
   .p-toast.show{opacity:1;transform:translate(-50%,0);}
 `;
 
-const ICON_MENU = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
-const ICON_SEARCH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+const ICON_MENU = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+const ICON_SEARCH = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
 
 const POPOUT_MAIN_TABS = [["kaomoji","Kaomoji"], ["face","Face Builder"], ["alt","Alt Codes"]];
 
@@ -266,27 +273,27 @@ function buildPopoutUI(doc, data){
   const win = doc.defaultView;
   doc.body.innerHTML = "";
 
-  const topbarEl = doc.createElement("div");
-  topbarEl.className = "p-topbar";
+  const railEl = doc.createElement("div");
+  railEl.className = "p-rail";
   const navBtn = doc.createElement("button");
-  navBtn.className = "p-icon-btn";
+  navBtn.className = "p-rail-btn";
   navBtn.type = "button";
   navBtn.title = "Switch section";
   navBtn.innerHTML = ICON_MENU;
-  const navPopover = doc.createElement("div");
-  navPopover.className = "p-nav-popover";
-  navPopover.hidden = true;
-  const spacerEl = doc.createElement("div");
-  spacerEl.className = "p-topbar-spacer";
+  const navFlyout = doc.createElement("div");
+  navFlyout.className = "p-nav-flyout";
+  navFlyout.hidden = true;
   const searchBtn = doc.createElement("button");
-  searchBtn.className = "p-icon-btn";
+  searchBtn.className = "p-rail-btn";
   searchBtn.type = "button";
   searchBtn.title = "Search";
   searchBtn.innerHTML = ICON_SEARCH;
-  topbarEl.appendChild(navBtn);
-  topbarEl.appendChild(navPopover);
-  topbarEl.appendChild(spacerEl);
-  topbarEl.appendChild(searchBtn);
+  railEl.appendChild(navBtn);
+  railEl.appendChild(navFlyout);
+  railEl.appendChild(searchBtn);
+
+  const mainEl = doc.createElement("div");
+  mainEl.className = "p-main";
 
   const searchRowEl = doc.createElement("div");
   searchRowEl.className = "p-search-row";
@@ -301,13 +308,16 @@ function buildPopoutUI(doc, data){
   subtabsEl.className = "p-subtabs";
   const gridEl = doc.createElement("div");
   gridEl.className = "p-grid";
+
+  mainEl.appendChild(searchRowEl);
+  mainEl.appendChild(subtabsEl);
+  mainEl.appendChild(gridEl);
+
   const toastEl = doc.createElement("div");
   toastEl.className = "p-toast";
 
-  doc.body.appendChild(topbarEl);
-  doc.body.appendChild(searchRowEl);
-  doc.body.appendChild(subtabsEl);
-  doc.body.appendChild(gridEl);
+  doc.body.appendChild(railEl);
+  doc.body.appendChild(mainEl);
   doc.body.appendChild(toastEl);
 
   const state = { main: "kaomoji", sub: "faces", query: "" };
@@ -386,8 +396,8 @@ function buildPopoutUI(doc, data){
     gridEl.appendChild(frag);
   }
 
-  function renderNavPopover(){
-    navPopover.innerHTML = "";
+  function renderNavFlyout(){
+    navFlyout.innerHTML = "";
     POPOUT_MAIN_TABS.forEach(([key, label]) => {
       const b = doc.createElement("button");
       b.className = "p-nav-option" + (key === state.main ? " active" : "");
@@ -396,22 +406,25 @@ function buildPopoutUI(doc, data){
       b.addEventListener("click", () => {
         state.main = key;
         state.sub = POPOUT_DEFAULT_SUB[key];
-        navPopover.hidden = true;
-        renderNavPopover();
+        navFlyout.hidden = true;
+        navBtn.classList.remove("active");
+        renderNavFlyout();
         renderSubtabs();
         renderGrid();
       });
-      navPopover.appendChild(b);
+      navFlyout.appendChild(b);
     });
   }
 
   navBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    navPopover.hidden = !navPopover.hidden;
+    navFlyout.hidden = !navFlyout.hidden;
+    navBtn.classList.toggle("active", !navFlyout.hidden);
   });
   doc.addEventListener("click", (e) => {
-    if (!navPopover.hidden && e.target !== navBtn && !navPopover.contains(e.target)) {
-      navPopover.hidden = true;
+    if (!navFlyout.hidden && e.target !== navBtn && !navFlyout.contains(e.target)) {
+      navFlyout.hidden = true;
+      navBtn.classList.remove("active");
     }
   });
 
@@ -440,7 +453,7 @@ function buildPopoutUI(doc, data){
     if (e.key === "Escape") closeSearch();
   });
 
-  renderNavPopover();
+  renderNavFlyout();
   renderSubtabs();
   renderGrid();
 }
