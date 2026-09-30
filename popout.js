@@ -33,35 +33,74 @@ const POPOUT_CSS = `
     display:flex;
     flex-direction:column;
   }
-  .p-tabs{
-    display:flex;
-    flex:none;
-    border-bottom:1px solid var(--border);
-    background:var(--surface);
-  }
-  .p-tab{
-    flex:1;
-    font-family:'Archivo',sans-serif;
-    font-weight:600;
-    font-size:12px;
-    color:var(--ink-muted);
-    background:transparent;
-    border:none;
-    border-bottom:2px solid transparent;
-    padding:10px 4px;
-    cursor:pointer;
-  }
-  .p-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
-  .p-controls{
+  .p-topbar{
     flex:none;
     display:flex;
+    align-items:center;
     gap:6px;
     padding:8px;
     border-bottom:1px solid var(--border);
+    background:var(--surface);
+    position:relative;
   }
+  .p-topbar-spacer{flex:1;}
+  .p-icon-btn{
+    flex:none;
+    width:28px;
+    height:28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:7px;
+    color:var(--ink-muted);
+    cursor:pointer;
+    padding:0;
+  }
+  .p-icon-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .p-icon-btn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);}
+  .p-nav-popover{
+    position:absolute;
+    top:100%;
+    left:8px;
+    margin-top:4px;
+    background:var(--surface-2);
+    border:1px solid var(--border-strong);
+    border-radius:8px;
+    padding:4px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    z-index:10;
+    box-shadow:0 8px 20px -6px rgba(0,0,0,0.5);
+    min-width:140px;
+  }
+  .p-nav-popover[hidden]{display:none;}
+  .p-nav-option{
+    font-family:'Archivo',sans-serif;
+    font-weight:600;
+    font-size:12px;
+    color:var(--ink);
+    background:transparent;
+    border:none;
+    border-radius:6px;
+    padding:8px 10px;
+    text-align:left;
+    cursor:pointer;
+  }
+  .p-nav-option:hover{background:var(--surface);}
+  .p-nav-option.active{background:var(--accent);color:var(--accent-ink);}
+  .p-search-row{
+    flex:none;
+    display:flex;
+    padding:8px 8px 0;
+  }
+  .p-search-row[hidden]{display:none;}
   .p-search{
     flex:1;
     min-width:0;
+    width:100%;
     background:var(--surface);
     border:1px solid var(--border-strong);
     border-radius:7px;
@@ -169,6 +208,11 @@ const POPOUT_CSS = `
   .p-toast.show{opacity:1;transform:translate(-50%,0);}
 `;
 
+const ICON_MENU = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+const ICON_SEARCH = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+
+const POPOUT_MAIN_TABS = [["kaomoji","Kaomoji"], ["face","Face Builder"], ["alt","Alt Codes"]];
+
 function popoutAnsiCode(code){ return "Alt+0" + String(code).padStart(3, "0"); }
 function popoutOemCode(code){ return "Alt+" + code; }
 
@@ -222,15 +266,37 @@ function buildPopoutUI(doc, data){
   const win = doc.defaultView;
   doc.body.innerHTML = "";
 
-  const tabsEl = doc.createElement("div");
-  tabsEl.className = "p-tabs";
-  const controlsEl = doc.createElement("div");
-  controlsEl.className = "p-controls";
+  const topbarEl = doc.createElement("div");
+  topbarEl.className = "p-topbar";
+  const navBtn = doc.createElement("button");
+  navBtn.className = "p-icon-btn";
+  navBtn.type = "button";
+  navBtn.title = "Switch section";
+  navBtn.innerHTML = ICON_MENU;
+  const navPopover = doc.createElement("div");
+  navPopover.className = "p-nav-popover";
+  navPopover.hidden = true;
+  const spacerEl = doc.createElement("div");
+  spacerEl.className = "p-topbar-spacer";
+  const searchBtn = doc.createElement("button");
+  searchBtn.className = "p-icon-btn";
+  searchBtn.type = "button";
+  searchBtn.title = "Search";
+  searchBtn.innerHTML = ICON_SEARCH;
+  topbarEl.appendChild(navBtn);
+  topbarEl.appendChild(navPopover);
+  topbarEl.appendChild(spacerEl);
+  topbarEl.appendChild(searchBtn);
+
+  const searchRowEl = doc.createElement("div");
+  searchRowEl.className = "p-search-row";
+  searchRowEl.hidden = true;
   const searchEl = doc.createElement("input");
   searchEl.className = "p-search";
   searchEl.type = "text";
   searchEl.placeholder = "Search…";
-  controlsEl.appendChild(searchEl);
+  searchRowEl.appendChild(searchEl);
+
   const subtabsEl = doc.createElement("div");
   subtabsEl.className = "p-subtabs";
   const gridEl = doc.createElement("div");
@@ -238,8 +304,8 @@ function buildPopoutUI(doc, data){
   const toastEl = doc.createElement("div");
   toastEl.className = "p-toast";
 
-  doc.body.appendChild(tabsEl);
-  doc.body.appendChild(controlsEl);
+  doc.body.appendChild(topbarEl);
+  doc.body.appendChild(searchRowEl);
   doc.body.appendChild(subtabsEl);
   doc.body.appendChild(gridEl);
   doc.body.appendChild(toastEl);
@@ -320,27 +386,61 @@ function buildPopoutUI(doc, data){
     gridEl.appendChild(frag);
   }
 
-  tabsEl.innerHTML = "";
-  [["kaomoji","Kaomoji"], ["face","Face Builder"], ["alt","Alt Codes"]].forEach(([key, label]) => {
-    const b = doc.createElement("button");
-    b.className = "p-tab" + (key === state.main ? " active" : "");
-    b.textContent = label;
-    b.addEventListener("click", () => {
-      state.main = key;
-      state.sub = POPOUT_DEFAULT_SUB[key];
-      [...tabsEl.children].forEach(el => el.classList.remove("active"));
-      b.classList.add("active");
-      renderSubtabs();
-      renderGrid();
+  function renderNavPopover(){
+    navPopover.innerHTML = "";
+    POPOUT_MAIN_TABS.forEach(([key, label]) => {
+      const b = doc.createElement("button");
+      b.className = "p-nav-option" + (key === state.main ? " active" : "");
+      b.type = "button";
+      b.textContent = label;
+      b.addEventListener("click", () => {
+        state.main = key;
+        state.sub = POPOUT_DEFAULT_SUB[key];
+        navPopover.hidden = true;
+        renderNavPopover();
+        renderSubtabs();
+        renderGrid();
+      });
+      navPopover.appendChild(b);
     });
-    tabsEl.appendChild(b);
+  }
+
+  navBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    navPopover.hidden = !navPopover.hidden;
+  });
+  doc.addEventListener("click", (e) => {
+    if (!navPopover.hidden && e.target !== navBtn && !navPopover.contains(e.target)) {
+      navPopover.hidden = true;
+    }
   });
 
+  function closeSearch(){
+    searchRowEl.hidden = true;
+    searchBtn.classList.remove("active");
+    searchEl.value = "";
+    state.query = "";
+    renderGrid();
+  }
+
+  searchBtn.addEventListener("click", () => {
+    if (searchRowEl.hidden) {
+      searchRowEl.hidden = false;
+      searchBtn.classList.add("active");
+      searchEl.focus();
+    } else {
+      closeSearch();
+    }
+  });
   searchEl.addEventListener("input", (e) => {
     state.query = e.target.value;
     renderGrid();
   });
+  searchEl.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeSearch();
+  });
 
+  renderNavPopover();
   renderSubtabs();
   renderGrid();
 }
