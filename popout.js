@@ -306,7 +306,7 @@ const POPOUT_CSS = `
 
 const ICON_MENU = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
 const ICON_SEARCH = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
-const ICON_EYE = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+const ICON_FILTER = '<svg width="12" height="12" viewBox="0 -960 960 960" fill="currentColor"><path d="M440-160q-17 0-28.5-11.5T400-200v-240L168-736q-15-20-4.5-42t36.5-22h560q26 0 36.5 22t-4.5 42L560-440v240q0 17-11.5 28.5T520-160h-80Zm40-308 198-252H282l198 252Zm0 0Z"/></svg>';
 
 const POPOUT_MAIN_TABS = [["kaomoji","Kaomoji"], ["face","Face Builder"], ["alt","Alt Codes"]];
 
@@ -400,7 +400,7 @@ function buildPopoutUI(doc, data){
   statusBtn.className = "p-rail-btn";
   statusBtn.type = "button";
   statusBtn.title = "Filter by status";
-  statusBtn.innerHTML = ICON_EYE;
+  statusBtn.innerHTML = ICON_FILTER;
   const statusFlyout = doc.createElement("div");
   statusFlyout.className = "p-nav-flyout";
   statusFlyout.hidden = true;
