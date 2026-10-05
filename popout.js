@@ -79,6 +79,38 @@ function initStatusFilterUI(onChange){
   });
 }
 
+// Keeps a face on one line by shrinking its font-size until it fits the
+// parent's content width (never grows past the CSS-defined size).
+// If a face can't fit even at minPx, its tile spans two grid columns instead.
+function fitOneLine(el, minPx){
+  const win = el.ownerDocument.defaultView;
+  const parent = el.parentElement;
+  if (!win || !parent) return;
+  el.style.fontSize = "";
+  parent.style.gridColumn = "";
+  const cs = win.getComputedStyle(parent);
+  const pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+  const base = parseFloat(win.getComputedStyle(el).fontSize);
+  const fit = () => {
+    el.style.fontSize = "";
+    const avail = parent.clientWidth - pad;
+    const natural = el.scrollWidth;
+    if (avail <= 0 || natural <= avail) return true;
+    const size = Math.floor(base * avail / natural * 10) / 10;
+    el.style.fontSize = Math.max(minPx, size) + "px";
+    return size >= minPx;
+  };
+  if (!fit()) {
+    parent.style.gridColumn = "span 2";
+    fit();
+  }
+}
+
+function fitAllOneLine(root, selector, minPx){
+  if (!root) return;
+  root.querySelectorAll(selector).forEach(el => fitOneLine(el, minPx));
+}
+
 function gatherPopoutData(){
   return {
     FACES, BLOCKS, FACE_PARTS, FACE_COMBOS, ANSI_DATA, OEM_DATA,
@@ -253,9 +285,6 @@ const POPOUT_CSS = `
     font-size:15px;
     line-height:1.2;
     color:var(--ink);
-    max-width:100%;
-    overflow:hidden;
-    text-overflow:ellipsis;
     white-space:nowrap;
   }
   .p-tile .p-glyph.p-ph{
@@ -514,7 +543,11 @@ function buildPopoutUI(doc, data){
       frag.appendChild(tile);
     });
     gridEl.appendChild(frag);
+    fitAllOneLine(gridEl, ".p-glyph", 9);
   }
+
+  win.addEventListener("resize", () => fitAllOneLine(gridEl, ".p-glyph", 9));
+  if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(() => fitAllOneLine(gridEl, ".p-glyph", 9));
 
   function renderNavFlyout(){
     navFlyout.innerHTML = "";
