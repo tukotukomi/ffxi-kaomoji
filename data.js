@@ -103,7 +103,9 @@ const FACES = [
 ["（ゝ。∂）","Uncategorized"],
 ["（´・｀ ）","Uncategorized"],
 ["(^ц^ )","Uncategorized"],
-["(-.-)占","Uncategorized"]
+["(-.-)占","Uncategorized"],
+["辛苦了 ヘ(￣ω￣ヘ)","Uncategorized"],
+["ヽ(*^^)人(^^*)ノ 恭喜恭喜 ★☆★","Uncategorized"]
 ];
 
 const BLOCKS = [
@@ -651,6 +653,8 @@ const CONTENT_STATUS = {
 "（´・｀ ）":"Verified",
 "(^ц^ )":"Verified",
 "(-.-)占":"Verified",
+"辛苦了 ヘ(￣ω￣ヘ)":"Verified",
+"ヽ(*^^)人(^^*)ノ 恭喜恭喜 ★☆★":"Verified",
 "☆彡":"Verified",
 "★彡":"Verified",
 "（":"Verified",
